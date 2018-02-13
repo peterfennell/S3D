@@ -1,4 +1,5 @@
 // S3D ALGORITHM
+// 
 // Inputs:
 //  (Required)
 //  - infile:           Datafile
@@ -10,6 +11,25 @@
 //  - start_skip_rows:  First row of a continuous block of rows to skip
 //  - end_skip_rows:    Row after the last row of a contiguous block of rows to skip
 //  - max_features:     Maximum number of features to choose (default 20)
+//
+// Outputs:
+//  - levels.csv
+//    - L rows, 2 columns
+//    - each row l is of the form "feature,R2"
+//      - feature: the chosen feature at level l of the model
+//      - R2: the total R-squared of the model at level l
+//  - splits.csv
+//    - L rows, variable columns
+//    - row l has the list of splits for the bins of the chosen variable at level l
+//  - R2improvements.csv
+//    - L rows, M columns
+//    - entry (l,m) is the R2 improvement of the model by the addition of feature m at level l
+//  - ybartree.csv
+//    - L rows, variable columns
+//    - row l has the ybar values for each partition element of level l
+//  - Ntree.csv
+//    - L rows, variable columns
+//    - row l has the number of elements N in each partition element of level l
 
 
 #include <iostream>

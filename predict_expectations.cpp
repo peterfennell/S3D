@@ -1,4 +1,5 @@
 // PREDICTING EXPECTED OUTCOMES WITH S3D
+//
 // Inputs:
 //  (Required)
 //  - datafile:         Datafile for which to make the predictions
@@ -9,7 +10,10 @@
 //  - min_samples:      Minimum number of samples required to make a prediction (default 1)
 //  - start_use_rows:   First row of a continuous block of rows to use for prediction (default 0)
 //  - end_use_rows:     Row after the last row of a contiguous block of rows to use for prediction (default n_predictions)
-
+//
+// Outputs:
+//  - predicted_expectations.cpp
+//    - vector with predicted expectations for each row of the input datafile
 
 #include <vector>
 #include <string>
