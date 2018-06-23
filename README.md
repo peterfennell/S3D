@@ -1,89 +1,94 @@
-# Structured Sum of Squares Decomposition (S3D) algorithm
+## structured sum of squares decomposition (s3d) algorithm
 
-C++ code for fast implementation of the Structured Sum of Squares Decomposition (S3D) algorithm
+c++ code for fast implementation of the structured sum of squares decomposition (s3d) algorithm
+
+note: this is a python wrapper. see original repo: https://github.com/peterfennell/S3D for pure c++ implementation
 
 ---
 
-### Installation
+### clarification
 
+the design of the constructor is meant to be easy for hyperparameter tuning by cross validation. therefore, the methods `fit` and `predict` may be a little weird to use as standalone functions.
+
+#### python dependencies
+
+- `pandas`
+- `joblib`
+- `networkx` (the latest version has the edge arrow fixed!)
+- `matplotlib`
+- `scikit-learn`
+- `seaborn`
+- `palettable`
+
+these can be installed by:
+```bash
+pip install -r requirements.txt
 ```
-$ make all
+
+#### compiling `s3d`
+
+compiling is simple and straight forward, do:
+```bash
+make all
+```
+or 
+```bash
+make clean && make all
+```
+to remove previous compiled files.
+
+#### data for cross val
+
+for cross validation processes, datasets should be splitted first. the script `split_data.py` can be used to do so. the script can be run as the following:
+```python
+python split_data.py data_name num_folds
 ```
 
----
+this will read in `data_name.csv` from `data/` folder; split data and store the train/test sets into `splitted_data/data_name/` folder. for example, if there is a dataset called `breastcancer.csv` in `data/`, we can do:
+```bash
+python split_data.py breastcancer 5
+```
 
-### Python Wrapper
+if we do `ls splitted_data/breastcancer/`, we will see:
+```bash
+0  1  2  3  4
+```
+which are fold indices named folder, each of which there will be:
+```bash
+num_rows.csv  test.csv  train.csv
+```
 
-see [`code/quickstart.ipynb`](code/quickstart.ipynb)
+`train.csv` is the training set; `test.csv` is the testing set; `num_rows.csv` store the number of rows in train/test respectively.
 
----
+finally, you can parallelize the data partitioning with more cores:
+```bash
+ptyhon split_data.py data_name num_folds num_jobs
+```
 
-### Splitting Data
-todo
+where `num_jobs` is 1 by default.
 
----
+#### data format
 
-### Inputs and Outputs
+data format: in `data_name.csv`, the first column is the target column named `target`, followed by features:
+> `target,feature_1,feature_2,...,feature_p`
 
-#### Traininig
-##### Inputs
- Required
- - infile:           Data file
- - outfolder:        Directory to save the model
- - lambda:           Lambda binning parameter
+#### file structure
 
-Optional
- - n_rows:           Number of rows of infile to use
- - ycol:             Column number of response variable y (0-indexed) (default 0)
- - start_skip_rows:  First row of a continuous block of rows to skip
- - end_skip_rows:    Row after the last row of a contiguous block of rows to skip
- - max_features:     Maximum number of features to choose (default 20)
+file directory setup: `PYS3D` class will by default create subfodlers `data_name` in:
+```bash
+tmp/ predictions/ models/ cv/
+```
 
-##### Outputs
- - levels.csv
-   - L rows, 2 columns
-   - each row l is of the form `feature, R2`
-     - feature: the chosen feature at level l of the model
-     - R2: the total R-squared of the model at level l
- - splits.csv
-   - L rows, variable columns
-   - row l has the list of splits for the bins of the chosen variable at level l
-   - manually check the matching of bins
- - R2improvements.csv
-   - L rows, M columns
-   - entry `(l, m)` is the R2 improvement of the model by the addition of feature m at level l
- - ybartree.csv
-   - the first row is the global y bar (averagee y values)
-   - L rows, variable columns
-   - row l has the ybar values for each partition element of level l
- - Ntree.csv
-   - L rows, variable columns
-   - row l has the number of elements N in each partition element of level l
+where:
+- `tmp` will store the "inner cross validation" temporary files
+- `predictions` will store the prediction results
+- `models` will store the trained models
+- `cv` will store the cross validation performance (on the validation set)
 
-#### Prediction
-##### Inputs
- Required
+therefore, the first step is to create all these 4 for your convenience. you can do:
+```bash
+./init
+```
+which will cleanup and create these folders
 
- - datafile:         Datafile for which to make the predictions
- - infolder:         Directory where S3D is located (this is "outfile" of train.cpp program)
- - outfolder:        Directory where the predictions will be saved
-
-Optional
- - max_features:     Maximum number of features to use for prediction (int >=0, default use all S3D chosen features)
- - min_samples:      Minimum number of samples required to make a prediction (default 1)
- - start_use_rows:   First row of a continuous block of rows to use for prediction (default 0)
- - end_use_rows:     Row after the last row of a contiguous block of rows to use for prediction (default n_predictions)
-
-##### Outputs
- - predicted_expectations.csv
-   - vector with predicted expectations for each row of the input datafile
-
----
-
-### Datasets
-
-- Stack Exchange: https://drive.google.com/open?id=19321sUtWQhyJHNa20ctk6gm7C8uR9kWk
-
-- Twitter: https://drive.google.com/open?id=1mJ8G5YYymF1cVgldhgcBRHYqOAACt0bs
-
-- Digg: https://drive.google.com/open?id=1e1OFqNH7ZlvgP_UjOVkkEJJsOINcCY8A
+reversely, run `./cleanup` to remove these folders
