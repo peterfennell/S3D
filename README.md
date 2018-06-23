@@ -10,6 +10,8 @@ note: this is a python wrapper. see original repo: https://github.com/peterfenne
 
 the design of the constructor is meant to be easy for hyperparameter tuning by cross validation. therefore, the methods `fit` and `predict` may be a little weird to use as standalone functions.
 
+see a [quickstart notebook](s3d/quickstart.ipynb) for more
+
 #### python dependencies
 
 - `pandas`
