@@ -124,3 +124,9 @@ config.rst
 
 /.project
 /.pydevproject
+
+tmp/
+cv/
+models/
+predictions/
+test-folder/

@@ -1,6 +1,6 @@
 import pandas as pd
 from contextlib import redirect_stdout
-from joblib import Parallel, delayed
+from joblib import Parallel, delayed, cpu_count
 import subprocess, os, shutil, time, utils, io, sys, warnings
 
 
@@ -426,10 +426,44 @@ class PYS3D(object):
             print('--- done multi-core cv; total elapsed time {0:.2f} seconds'.format(time.time()-start))
 
             performance_df = pd.concat(l, axis=0)
-            #print(performance_df)
-
             performance_df.to_csv(self.cv_path+'performance.csv', index=False)
-            #performance_df.to_csv('{}-performance.csv'.format(self.data_name), index=False)
+
+    def _evaluate(self, fold_index, cv_metric):
+        train_data_path = self.data_path + str(fold_index) + '/train.csv'
+        test_data_path = self.data_path + str(fold_index) + '/test.csv'
+        train_model_path = self.model_path + str(fold_index) + '/'
+
+        lambda_, num_features, _, __ = self.cv_param_df.loc[fold_index]
+
+        self.fit(train_data_path, train_model_path, lambda_, num_features)
+        ## do not give it the number of features
+        prediction_path = '{}/{}/'.format(self.prediction_path, fold_index)
+        df = self.score(test_data_path, train_model_path,
+        prediction_path, train_data_path=train_data_path,
+        calc_threshold=True)
+        #df.set_index('num_features').loc[num_features]
+        if df['num_features'].max() < num_features:
+            return pd.DataFrame()
+
+        series = df.set_index('num_features').loc[num_features]
+        series['lambda_'] = lambda_
+        series['split_version'] = fold_index
+        return series
+
+    def evaluate(self, cv_metric='auc_micro', num_jobs=1):
+        ''' evaluate s3d on the held out test set using the best parameters based on '''
+        fold_list = pd.np.arange(self.num_folds)
+
+        num_jobs = min(num_jobs, cpu_count())
+        print('evaluating s3d model using {} cores...'.format(num_jobs))
+        self.cv_param_df = utils.find_best_param(self.cv_path+'performance.csv',
+                                                 validation_metric=cv_metric)
+        self.cv_param_df.set_index('split_version', inplace=True)
+        l = Parallel(n_jobs=num_jobs)(delayed(self._evaluate)(fold_index, cv_metric)\
+                                      for fold_index in fold_list)
+        df = pd.DataFrame(l)
+        df.index.name = 'num_features'
+        return df.reset_index()
 
     def calculate_disc_threshold(self, subfolder, max_features):
         ''' this function from peter's code on dropbox

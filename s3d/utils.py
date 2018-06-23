@@ -394,3 +394,23 @@ def visualize_feature_network(model_folder,
     #fig.set_frameon(False)
     _ = ax.axis('off')
     return g, (fig, ax)
+
+def find_best_param(performance_file, validation_metric):
+    df = pd.read_csv(performance_file)
+    id_vars_list = ['split_version', 'lambda_', 'num_features']
+    cv_df = df.groupby(id_vars_list).mean()[[validation_metric, 'train_r2']]
+
+    ## reshape the data
+
+    cv_df = cv_df.reset_index().melt(id_vars=id_vars_list,
+                                     value_vars=[validation_metric, 'train_r2'])
+
+    ## group by each `split_version` to obtain the best `lambda_` and `num_features`
+    param_df = list()
+    for s_ver, split_cv_df in cv_df.groupby('split_version'):
+        split_cv_df = split_cv_df.set_index(id_vars_list[1:])
+        best_lambda_, best_n_f = split_cv_df.query("variable==@validation_metric").value.idxmax()
+        best_value = split_cv_df.value.max()
+        param_df.append([s_ver, best_lambda_, best_n_f, best_value, validation_metric])
+    param_df = pd.DataFrame(param_df, columns=['split_version', 'lambda_', 'num_features', 'best_value', 'metric'])
+    return param_df
