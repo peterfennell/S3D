@@ -1,0 +1,5 @@
+best_feature,R2
+cell_shape,0.77541
+bare_nuclei,0.923287
+marginal_adhesion,0.976849
+clump_thickness,0.994855

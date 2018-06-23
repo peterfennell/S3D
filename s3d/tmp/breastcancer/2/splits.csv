@@ -1,0 +1,4 @@
+cell_shape,1,1,2,3,4,5,7,10
+bare_nuclei,1,2,3,4,5,7,8,9,10
+se_cell_size,1,1,2,4,5,7,10
+clump_thickness,1,5,10

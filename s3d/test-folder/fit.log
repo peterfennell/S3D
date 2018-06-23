@@ -1,0 +1,326 @@
+./train -infile:../splitted_data/breastcancer/1/train.csv -outfolder:test-folder/ -lambda:0.003 -ycol:0 -start_skip_rows:-1 -end_skip_rows:-1 -max_features:2.0
+* STRUCTURED SUM OF SQUARES DECOMPOSITION ALGORITHM *
+
+ Reading data from ../splitted_data/breastcancer/1/train.csv
+ Writing data to folder test-folder/
+ - lambda = 0.003
+
+FEATURES:
+clump_thickness
+cell_size
+cell_shape
+marginal_adhesion
+se_cell_size
+bare_nuclei
+bland_chromatin
+normal_nucleoli
+mitoses
+
+TARGET VARIABLE:
+target
+
+Reading in Y data...
+0.00053 seconds to read in single column.
+ - 546 rows of data
+ - SampleMean(Y) = 0.373626
+ - SampleSTD(Y) = 0.48421
+ - SST(Y) = 127.78
+
+--------------------------------------
+   CREATING LEVEL 1 OF THE TREE.
+--------------------------------------
+
+ - processing clump_thickness
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,5] and [6,10],  total R2 improvement = 0.501233, DL = -0.498233
+     - [1,5], splits = [1,4] and [5,5],  total R2 improvement = 0.541908, DL = -0.0376755
+     - [6,10], splits = [6,6] and [7,10],  total R2 improvement = 0.573138, DL = -0.0282297
+     - [1,4], splits = [1,2] and [3,4],  total R2 improvement = 0.577902, DL = -0.00176385
+     - [7,10], splits = [7,8] and [9,10],  total R2 improvement = 0.57909, DL = 0.00181215
+     - [7,8], splits = [7,7] and [8,8],  total R2 improvement = 0.580178, DL = 0.00191165
+     - [1,2], splits = [1,1] and [2,2],  total R2 improvement = 0.580677, DL = 0.00250109
+     - [3,4], splits = [3,3] and [4,4],  total R2 improvement = 0.580809, DL = 0.00286831
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.577902, DL = 0.003
+   - Chosen partitions: [1,2], (2,4], (4,5], (5,6], (6,10], 
+   - R2 improvement: 0.577902
+
+ - processing cell_size
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,2] and [3,10],  total R2 improvement = 0.683559, DL = -0.680559
+     - [3,10], splits = [3,3] and [4,10],  total R2 improvement = 0.74381, DL = -0.0572514
+     - [1,2], splits = [1,1] and [2,2],  total R2 improvement = 0.753913, DL = -0.00710288
+     - [4,10], splits = [4,4] and [5,10],  total R2 improvement = 0.761305, DL = -0.00439227
+     - [5,10], splits = [5,6] and [7,10],  total R2 improvement = 0.761569, DL = 0.00273646
+     - [7,10], splits = [7,9] and [10,10],  total R2 improvement = 0.762457, DL = 0.0021113
+     - [7,9], splits = [7,8] and [9,9],  total R2 improvement = 0.763208, DL = 0.00224902
+     - [7,8], splits = [7,7] and [8,8],  total R2 improvement = 0.763247, DL = 0.0029618
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.761305, DL = 0.003
+   - Chosen partitions: [1,1], (1,2], (2,3], (3,4], (4,10], 
+   - R2 improvement: 0.761305
+
+ - processing cell_shape
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,2] and [3,10],  total R2 improvement = 0.695415, DL = -0.692415
+     - [3,10], splits = [3,3] and [4,10],  total R2 improvement = 0.74959, DL = -0.0511756
+     - [4,10], splits = [4,4] and [5,10],  total R2 improvement = 0.757992, DL = -0.00540166
+     - [1,2], splits = [1,1] and [2,2],  total R2 improvement = 0.762504, DL = -0.00151183
+     - [5,10], splits = [5,8] and [9,10],  total R2 improvement = 0.76341, DL = 0.00209416
+     - [5,8], splits = [5,5] and [6,8],  total R2 improvement = 0.763615, DL = 0.0027943
+     - [6,8], splits = [6,7] and [8,8],  total R2 improvement = 0.763746, DL = 0.0028692
+     - [6,7], splits = [6,6] and [7,7],  total R2 improvement = 0.763747, DL = 0.00299906
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.762504, DL = 0.003
+   - Chosen partitions: [1,1], (1,2], (2,3], (3,4], (4,10], 
+   - R2 improvement: 0.762504
+
+ - processing marginal_adhesion
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,3] and [4,10],  total R2 improvement = 0.451367, DL = -0.448367
+     - [1,3], splits = [1,1] and [2,3],  total R2 improvement = 0.525232, DL = -0.0708653
+     - [4,10], splits = [4,6] and [7,10],  total R2 improvement = 0.5323, DL = -0.0040678
+     - [2,3], splits = [2,2] and [3,3],  total R2 improvement = 0.534814, DL = 0.000486244
+     - [4,6], splits = [4,5] and [6,6],  total R2 improvement = 0.535537, DL = 0.00227636
+     - [4,5], splits = [4,4] and [5,5],  total R2 improvement = 0.536104, DL = 0.0024329
+     - [7,10], splits = [7,9] and [10,10],  total R2 improvement = 0.53618, DL = 0.00292391
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.5323, DL = 0.003
+   - Chosen partitions: [1,1], (1,3], (3,6], (6,10], 
+   - R2 improvement: 0.5323
+
+ - processing se_cell_size
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,2] and [3,10],  total R2 improvement = 0.588133, DL = -0.585133
+     - [3,10], splits = [3,3] and [4,10],  total R2 improvement = 0.611449, DL = -0.0203162
+     - [4,10], splits = [4,5] and [6,10],  total R2 improvement = 0.615861, DL = -0.0014112
+     - [1,2], splits = [1,1] and [2,2],  total R2 improvement = 0.616511, DL = 0.00234937
+     - [6,10], splits = [6,6] and [7,10],  total R2 improvement = 0.616774, DL = 0.00273756
+     - [7,10], splits = [7,7] and [8,10],  total R2 improvement = 0.619154, DL = 0.000619836
+     - [8,10], splits = [8,8] and [9,10],  total R2 improvement = 0.619192, DL = 0.00296173
+     - [4,5] split into [4,4] and [5,5], total R2 improvement = 0.615861, DL = 0.00297819
+   - Chosen partitions: [1,2], (2,3], (3,5], (5,10], 
+   - R2 improvement: 0.615861
+
+ - processing bare_nuclei
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,3] and [4,10],  total R2 improvement = 0.664149, DL = -0.661149
+     - [1,3], splits = [1,1] and [2,3],  total R2 improvement = 0.696913, DL = -0.0297637
+     - [4,10], splits = [4,5] and [6,10],  total R2 improvement = 0.716512, DL = -0.0165996
+     - [2,3], splits = [2,2] and [3,3],  total R2 improvement = 0.720588, DL = -0.00107601
+     - [6,10], splits = [6,8] and [9,10],  total R2 improvement = 0.721675, DL = 0.00191365
+     - [4,5], splits = [4,4] and [5,5],  total R2 improvement = 0.722599, DL = 0.00207616
+     - [6,8], splits = [6,6] and [7,8],  total R2 improvement = 0.722859, DL = 0.00273914
+     - [9,10], splits = [9,9] and [10,10],  total R2 improvement = 0.722904, DL = 0.00295555
+     - [7,8] split into [7,7] and [8,8], total R2 improvement = 0.720588, DL = 0.00298284
+   - Chosen partitions: [1,1], (1,2], (2,3], (3,5], (5,10], 
+   - R2 improvement: 0.720588
+
+ - processing bland_chromatin
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,3] and [4,10],  total R2 improvement = 0.576455, DL = -0.573455
+     - [1,3], splits = [1,2] and [3,3],  total R2 improvement = 0.606648, DL = -0.0271925
+     - [4,10], splits = [4,7] and [8,10],  total R2 improvement = 0.610623, DL = -0.00097536
+     - [4,7], splits = [4,4] and [5,7],  total R2 improvement = 0.612427, DL = 0.00119635
+     - [1,2], splits = [1,1] and [2,2],  total R2 improvement = 0.612895, DL = 0.00253207
+     - [5,7], splits = [5,5] and [6,7],  total R2 improvement = 0.613108, DL = 0.00278704
+     - [6,7], splits = [6,6] and [7,7],  total R2 improvement = 0.613598, DL = 0.00250942
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.610623, DL = 0.003
+   - Chosen partitions: [1,2], (2,3], (3,7], (7,10], 
+   - R2 improvement: 0.610623
+
+ - processing normal_nucleoli
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,2] and [3,10],  total R2 improvement = 0.588204, DL = -0.585204
+     - [3,10], splits = [3,8] and [9,10],  total R2 improvement = 0.597358, DL = -0.00615409
+     - [3,8], splits = [3,3] and [4,8],  total R2 improvement = 0.600453, DL = -9.53884e-05
+     - [4,8], splits = [4,4] and [5,8],  total R2 improvement = 0.601014, DL = 0.00243881
+     - [1,2], splits = [1,1] and [2,2],  total R2 improvement = 0.601208, DL = 0.00280649
+     - [5,8], splits = [5,5] and [6,8],  total R2 improvement = 0.60126, DL = 0.00294824
+     - [6,8], splits = [6,6] and [7,8],  total R2 improvement = 0.601332, DL = 0.00292754
+     - [7,8] split into [7,7] and [8,8], total R2 improvement = 0.600453, DL = 0.00299718
+   - Chosen partitions: [1,2], (2,3], (3,8], (8,10], 
+   - R2 improvement: 0.600453
+
+ - processing mitoses
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,1] and [2,10],  total R2 improvement = 0.27832, DL = -0.27532
+     - [2,10], splits = [2,2] and [3,10],  total R2 improvement = 0.282453, DL = -0.00113346
+     - [3,10], splits = [3,7] and [8,10],  total R2 improvement = 0.283019, DL = 0.00243355
+     - [3,7], splits = [3,4] and [5,7],  total R2 improvement = 0.283428, DL = 0.00259192
+     - [3,4], splits = [3,3] and [4,4],  total R2 improvement = 0.283784, DL = 0.00264326
+     - [5,7], splits = [5,5] and [6,7],  total R2 improvement = 0.283959, DL = 0.00282563
+     - [6,7] split into [6,6] and [7,7], total R2 improvement = 0.282453, DL = 0.00273321
+   - Chosen partitions: [1,1], (1,2], (2,10], 
+   - R2 improvement: 0.282453
+
+SUMMARY:
+ - Best feature is cell_shape with R2 improvement of 0.762504.
+ - Total R2 is now 0.762504
+ - Updating groups...5 groups now.
+
+
+
+--------------------------------------
+   CREATING LEVEL 2 OF THE TREE.
+--------------------------------------
+
+ - processing clump_thickness
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,5] and [6,10],  total R2 improvement = 0.0684312, DL = -0.285136
+     - [6,10], splits = [6,6] and [7,10],  total R2 improvement = 0.0837266, DL = -0.0614027
+     - [1,5], splits = [1,1] and [2,5],  total R2 improvement = 0.0930947, DL = -0.0364452
+     - [2,5], splits = [2,3] and [4,5],  total R2 improvement = 0.100753, DL = -0.0292476
+     - [7,10], splits = [7,8] and [9,10],  total R2 improvement = 0.105657, DL = -0.0176459
+     - [2,3], splits = [2,2] and [3,3],  total R2 improvement = 0.107048, DL = -0.0028581
+     - [4,5], splits = [4,4] and [5,5],  total R2 improvement = 0.10776, DL = 4.68497e-07
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.107048, DL = 0.003
+   - Chosen partitions: [1,1], (1,2], (2,3], (3,5], (5,6], (6,8], (8,10], 
+   - R2 improvement: 0.107048
+
+ - processing cell_size
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,1] and [2,10],  total R2 improvement = 0.0423116, DL = -0.175157
+     - [2,10], splits = [2,3] and [4,10],  total R2 improvement = 0.0612098, DL = -0.0765726
+     - [4,10], splits = [4,4] and [5,10],  total R2 improvement = 0.0692379, DL = -0.0308032
+     - [2,3], splits = [2,2] and [3,3],  total R2 improvement = 0.0719856, DL = -0.00856936
+     - [5,10], splits = [5,9] and [10,10],  total R2 improvement = 0.0723182, DL = 0.0015997
+     - [5,9], splits = [5,6] and [7,9],  total R2 improvement = 0.0732326, DL = -0.000850262
+     - [7,9], splits = [7,7] and [8,9],  total R2 improvement = 0.0732526, DL = 0.00291551
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.0732326, DL = 0.003
+   - Chosen partitions: [1,1], (1,2], (2,3], (3,4], (4,6], (6,9], (9,10], 
+   - R2 improvement: 0.0732326
+
+ - skipping chosen feature cell_shape
+
+ - processing marginal_adhesion
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,3] and [4,10],  total R2 improvement = 0.0301253, DL = -0.123846
+     - [4,10], splits = [4,6] and [7,10],  total R2 improvement = 0.038508, DL = -0.0322959
+     - [4,6], splits = [4,4] and [5,6],  total R2 improvement = 0.0448387, DL = -0.023656
+     - [5,6], splits = [5,5] and [6,6],  total R2 improvement = 0.0516994, DL = -0.0258878
+     - [1,3], splits = [1,1] and [2,3],  total R2 improvement = 0.0568045, DL = -0.0184952
+     - [2,3], splits = [2,2] and [3,3],  total R2 improvement = 0.0626593, DL = -0.0216523
+     - [7,10], splits = [7,8] and [9,10],  total R2 improvement = 0.0639636, DL = -0.00249197
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.0639636, DL = 0.003
+   - Chosen partitions: [1,1], (1,2], (2,3], (3,4], (4,5], (5,6], (6,8], (8,10], 
+   - R2 improvement: 0.0639636
+
+ - processing se_cell_size
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,2] and [3,10],  total R2 improvement = 0.0548419, DL = -0.227917
+     - [3,10], splits = [3,3] and [4,10],  total R2 improvement = 0.0638413, DL = -0.0348928
+     - [4,10], splits = [4,4] and [5,10],  total R2 improvement = 0.0741878, DL = -0.0405649
+     - [5,10], splits = [5,5] and [6,10],  total R2 improvement = 0.0763517, DL = -0.00611115
+     - [6,10], splits = [6,7] and [8,10],  total R2 improvement = 0.0808382, DL = -0.015891
+     - [6,7], splits = [6,6] and [7,7],  total R2 improvement = 0.0843203, DL = -0.0116616
+     - [1,2], splits = [1,1] and [2,2],  total R2 improvement = 0.0847566, DL = 0.00116311
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.0843203, DL = 0.003
+   - Chosen partitions: [1,2], (2,3], (3,4], (4,5], (5,6], (6,7], (7,10], 
+   - R2 improvement: 0.0843203
+
+ - processing bare_nuclei
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,2] and [3,10],  total R2 improvement = 0.0925383, DL = -0.386641
+     - [3,10], splits = [3,5] and [6,10],  total R2 improvement = 0.111339, DL = -0.0761608
+     - [1,2], splits = [1,1] and [2,2],  total R2 improvement = 0.119129, DL = -0.029803
+     - [6,10], splits = [6,7] and [8,10],  total R2 improvement = 0.125774, DL = -0.0249785
+     - [3,5], splits = [3,4] and [5,5],  total R2 improvement = 0.131952, DL = -0.0230108
+     - [3,4], splits = [3,3] and [4,4],  total R2 improvement = 0.135348, DL = -0.0113002
+     - [8,10], splits = [8,8] and [9,10],  total R2 improvement = 0.136981, DL = -0.00387651
+     - [9,10], splits = [9,9] and [10,10],  total R2 improvement = 0.137094, DL = 0.00252473
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.136981, DL = 0.003
+   - Chosen partitions: [1,1], (1,2], (2,3], (3,4], (4,5], (5,7], (7,8], (8,10], 
+   - R2 improvement: 0.136981
+
+ - processing bland_chromatin
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,3] and [4,10],  total R2 improvement = 0.0701511, DL = -0.292377
+     - [1,3], splits = [1,2] and [3,3],  total R2 improvement = 0.0816804, DL = -0.0455456
+     - [4,10], splits = [4,4] and [5,10],  total R2 improvement = 0.0865318, DL = -0.0174269
+     - [5,10], splits = [5,5] and [6,10],  total R2 improvement = 0.0894999, DL = -0.0094977
+     - [6,10], splits = [6,7] and [8,10],  total R2 improvement = 0.0934722, DL = -0.0137255
+     - [1,2], splits = [1,1] and [2,2],  total R2 improvement = 0.0962879, DL = -0.0088557
+     - [6,7], splits = [6,6] and [7,7],  total R2 improvement = 0.0989676, DL = -0.0082835
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.0989676, DL = 0.003
+   - Chosen partitions: [1,1], (1,2], (2,3], (3,4], (4,5], (5,6], (6,7], (7,10], 
+   - R2 improvement: 0.0989676
+
+ - processing normal_nucleoli
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,2] and [3,10],  total R2 improvement = 0.0607751, DL = -0.252899
+     - [3,10], splits = [3,6] and [7,10],  total R2 improvement = 0.0687707, DL = -0.0306662
+     - [7,10], splits = [7,8] and [9,10],  total R2 improvement = 0.0762669, DL = -0.0285636
+     - [3,6], splits = [3,3] and [4,6],  total R2 improvement = 0.0820131, DL = -0.0211946
+     - [4,6], splits = [4,4] and [5,6],  total R2 improvement = 0.0917107, DL = -0.0378329
+     - [1,2], splits = [1,1] and [2,2],  total R2 improvement = 0.0953475, DL = -0.012313
+     - [7,8], splits = [7,7] and [8,8],  total R2 improvement = 0.0970141, DL = -0.00401752
+     - [5,6], splits = [5,5] and [6,6],  total R2 improvement = 0.0982691, DL = -0.00228394
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.0982691, DL = 0.003
+   - Chosen partitions: [1,1], (1,2], (2,3], (3,4], (4,5], (5,6], (6,7], (7,8], (8,10], 
+   - R2 improvement: 0.0982691
+
+ - processing mitoses
+   - reading data...
+   - range: [1,10]
+   - splits:
+     - (interval, splits, ybars, Ns, R2, delta LF)
+     - [1,10], splits = [1,1] and [2,10],  total R2 improvement = 0.0392244, DL = -0.162158
+     - [2,10], splits = [2,2] and [3,10],  total R2 improvement = 0.0475814, DL = -0.0321878
+     - [3,10], splits = [3,3] and [4,10],  total R2 improvement = 0.0549415, DL = -0.0279904
+     - [1,1] split into [1,1] and [2,1], total R2 improvement = 0.0549415, DL = 0.003
+   - Chosen partitions: [1,1], (1,2], (2,3], (3,10], 
+   - R2 improvement: 0.0549415
+
+SUMMARY:
+ - Best feature is bare_nuclei with R2 improvement of 0.136981.
+ - Total R2 is now 0.899485
+ - Updating groups...40 groups now.
+
+
+Time = 0.016436 seconds.
+---errors below (if any)---

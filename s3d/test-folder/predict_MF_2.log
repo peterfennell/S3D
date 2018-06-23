@@ -1,0 +1,24 @@
+./predict_expectations -datafile:../splitted_data/breastcancer/1/test.csv -infolder:test-folder/ -outfolder:test-folder/ -max_features:2 -start_use_rows:0 -end_use_rows:-1
+* PREDICT EXPECTATIONS ALGORITHM *
+
+ Reading data from ../splitted_data/breastcancer/1/test.csv
+ Reading SSML decomposition output from test-folder/
+ Writing predictions to file test-folder//predicted_expectations_MF_2.csv
+
+  - 137 rows for prediction
+
+ FEATURES for prediction are:
+  - cell_shape
+  - bare_nuclei
+
+ PERFORMING PREDICTIONS 
+
+ A: Calculating positions...
+ B: Scanning N_file for to check for min_samples...
+ C: Extracting predicted expectations from ybar_file...
+ D: Saving...
+
+ DONE
+  - program took 0.002098 seconds to execute.
+
+---errors below (if any) ---
