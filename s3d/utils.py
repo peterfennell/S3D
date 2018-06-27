@@ -165,6 +165,241 @@ def visualize_s3d_model_reader(model_folder, dim, thres):
     splits_at_dim = splits[:dim]
     Ns_sublist = Ns[dim]
     intensity = ybars[dim]
+    intensity_mesh = pd.np.reshape(pd.np.array(intensity),
+                                   list(map(lambda x:len(x)-1, splits_at_dim)))
+    Ns_mesh = pd.np.reshape(pd.np.array(Ns_sublist),
+                            list(map(lambda x:len(x)-1, splits_at_dim)))
+    N_masked = pd.np.ma.masked_where((Ns_mesh == 0), Ns_mesh)
+    pred_masked = ((intensity_mesh >= thres) & (Ns_mesh >0)).astype(int)
+    intensity_masked = pd.np.ma.masked_where((Ns_mesh==0)|(intensity_mesh<=0),
+                                             intensity_mesh)
+    return splits_at_dim, N_masked, intensity_masked, pred_masked, chosen_features[:dim]
+
+def visualize_s3d_model(dim, splits_at_dim, cmap,
+                        masked_arr, cbar_label,
+                        chosen_features=None,
+                        xscale='log', yscale='log',
+                        xlab_x=None, xlab_y=None, norm_func=None,
+                        ylab_x=None, ylab_y=None, scale=1,
+                        fontsize=15, unit_w=3.3, unit_h=2.4,
+                        cb_kwargs={'aspect': 15},
+                        cb_label_kwargs={'labelpad': 30, 'rotation': 270}
+                        ):
+    nrows = ncols = 1
+    if dim == 3:
+        ncols = len(splits_at_dim[0])-1
+    if dim == 4:
+        nrows = len(splits_at_dim[0])-1
+        ncols = len(splits_at_dim[1])-1
+
+    figsize = (ncols*scale*unit_w, nrows*unit_h*scale)
+    fig, ax_arr = plt.subplots(figsize=figsize, nrows=nrows, ncols=ncols,
+                               sharey=True, sharex=True)
+    ax_arr = pd.np.reshape(ax_arr, (nrows, ncols))
+
+    norm = None
+    if norm_func is not None:
+        try:
+            norm = norm_func(masked_arr.min(), masked_arr.max())
+        except:
+            warnings.warn('norm_func may be inappropriate. try another one.\nnow no normalization is applied.')
+
+    for i in range(nrows):
+        for j in range(ncols):
+            ax = ax_arr[i, j]
+            if dim == 2:
+                mesh_map = masked_arr
+            elif dim == 3:
+                mesh_map = masked_arr[j,:,:]
+            else:
+                mesh_map = masked_arr[nrows-i-1,j,:]
+            im = ax.pcolormesh(splits_at_dim[dim-2], splits_at_dim[dim-1],
+                               mesh_map.T, cmap=cmap,
+                               vmin=masked_arr.min(),
+                               vmax=masked_arr.max(),
+                               norm=norm
+                              )
+            ax.set_xscale(xscale)
+            ax.set_xlim(max(1, min(splits_at_dim[dim-2])), max(splits_at_dim[dim-2]))
+            ax.set_yscale(yscale)
+            ax.set_ylim(max(1, min(splits_at_dim[dim-1])), max(splits_at_dim[dim-1]))
+
+            if dim > 2 and i == nrows-1:
+                xlab_str = '{}'.format(chosen_features[dim-2])
+                xlab_str += '\n$[{}, {})$'.format(splits_at_dim[dim-3][j],
+                                                   splits_at_dim[dim-3][j+1])
+                ax.set_xlabel(xlab_str, size=fontsize)
+            elif dim == 2:
+                ax.set_xlabel(chosen_features[0], size=fontsize)
+
+            if j == 0:
+                if dim == 4:
+                    ylab_str = '$[{}, {})$\n'.format(splits_at_dim[0][nrows-i-1],
+                                                      splits_at_dim[0][nrows-i])
+                    ylab_str += '{}'.format(chosen_features[dim-1])
+                else:
+                    ylab_str = '{}'.format(chosen_features[dim-1])
+                ax.set_ylabel(ylab_str, size=fontsize)
+
+    if dim == 3:
+        if xlab_x is None:
+            xlab_x = .33*scale
+        if xlab_y is None:
+            xlab_y = -0.4/scale
+        fig.text(x=xlab_x, y=xlab_y, s=chosen_features[dim-3], size=fontsize)
+        #fig.suptitle(chosen_features[dim-3], size=fontsize, y=-0.25, x=0.45)
+    elif dim == 4:
+        if xlab_x is None:
+            xlab_x = .38*scale
+        if xlab_y is None:
+            xlab_y = 0.01/scale
+        fig.text(x=xlab_x, y=xlab_y, s=chosen_features[dim-3], size=fontsize)
+
+        if ylab_x is None:
+            ylab_x = .008*scale
+        if ylab_y is None:
+            ylab_y = 0.6/scale
+        fig.text(x=ylab_x, y=ylab_y, s=chosen_features[0], size=fontsize, rotation=90)
+
+    # colorbar
+    cb = fig.colorbar(im, ax=ax_arr.ravel().tolist(),
+                      pad=0.1/(dim+.5), **cb_kwargs)
+    cb.set_label(cbar_label, **cb_label_kwargs)
+    return fig, ax_arr
+
+def visualize_feature_network_contruct(model_folder, node_label_mapping, color_choice, isolated_option):
+    ''' helper function to visualize feature network '''
+
+    r2_improv_df = pd.read_csv(model_folder+'R2improvements.csv')
+    ## construct graph
+    g = nx.DiGraph()
+    selected_nodes = r2_improv_df.idxmax(axis=1).values
+    unselected_nodes = set(r2_improv_df.columns) - set(selected_nodes)
+    isolated_nodes = list(nx.isolates(g))
+    g.add_nodes_from(selected_nodes, color=color_choice['selected'])
+    g.add_nodes_from(unselected_nodes, color=color_choice['unselected'])
+    for idx, series in r2_improv_df.iterrows():
+        if idx+1 == r2_improv_df.shape[0]:
+            break
+        ## selected one has the largest val
+        selected_feature = series.idxmax()
+        #print(selected_feature)
+        ## for each unselected ones, create edges
+        for feature in r2_improv_df.columns:
+            if feature == selected_feature:
+                continue
+            ## skip edges w/o r2 improvement
+            w = series.loc[feature] - r2_improv_df.loc[idx+1, feature]
+            if w == 0:
+                continue
+            g.add_edge(feature, selected_feature, weight=w)
+    draw_node_list = set(g)
+    if isolated_option == 'remove':
+        draw_node_list = set(g) - set(nx.isolates(g))
+    else:
+        if isolated_option != 'color':
+            warnings.warn('isolated option not understood (remove/color).\nUse color option by default')
+        color_dict = nx.get_node_attributes(g, 'color')
+        for u in nx.isolates(g):
+            color_dict[u] = color_choice['isolated']
+        nx.set_node_attributes(g, color_dict, 'color')
+
+    if node_label_mapping is not None:
+        nx.relabel_nodes(g, node_label_mapping, False)
+
+    return g, draw_node_list
+
+def visualize_feature_network(model_folder,
+                              node_label_mapping=None,
+                              color_choice=dict(zip(['selected', 'unselected', 'isolated'],
+                                                    palettable.colorbrewer.qualitative.Pastel1_3.hex_colors)),
+                              isolated_option='remove', layout=None,
+                              w_scale=200, node_size=800, figsize=(10,10),
+                              arrowsize=20, arrowstyle='->',
+                              edge_color='k', edge_weight_list=None,
+                              edge_kwargs={}, node_kwargs={}, label_kwargs={},
+                             ):
+    g, draw_node_llist = visualize_feature_network_contruct(model_folder, node_label_mapping,
+                                                            color_choice,
+                                                            isolated_option)
+
+    if edge_weight_list is None:
+        edge_weight_list = list(nx.get_edge_attributes(g, 'weight').values())
+        edge_weight_list = abs(pd.np.array(edge_weight_list)*w_scale)
+
+    node_color_list = list(nx.get_node_attributes(g, 'color').values())
+
+    if layout is None:
+        layout = nx.circular_layout(g)
+
+    fig, ax = plt.subplots(figsize=figsize)
+    labels = nx.draw_networkx_labels(g, layout, ax=ax, **label_kwargs)
+    edges = nx.draw_networkx_edges(g, layout, arrowstyle=arrowstyle,
+                                   arrowsize=arrowsize, edge_color=edge_color,
+                                   width=edge_weight_list, ax=ax,
+                                   **edge_kwargs
+                                  )
+    nodes = nx.draw_networkx_nodes(g, layout, ax=ax,
+                                   node_size=node_size,
+                                   node_color=node_color_list,
+                                   **node_kwargs
+                                  )
+    #fig.set_frameon(False)
+    _ = ax.axis('off')
+    return g, (fig, ax)
+
+def find_best_param(performance_file, validation_metric):
+    df = pd.read_csv(performance_file)
+    id_vars_list = ['split_version', 'lambda_', 'num_features']
+    cv_df = df.groupby(id_vars_list).mean()[[validation_metric, 'train_r2']]
+
+    ## reshape the data
+
+    cv_df = cv_df.reset_index().melt(id_vars=id_vars_list,
+                                     value_vars=[validation_metric, 'train_r2'])
+
+    ## group by each `split_version` to obtain the best `lambda_` and `num_features`
+    param_df = list()
+    for s_ver, split_cv_df in cv_df.groupby('split_version'):
+        split_cv_df = split_cv_df.set_index(id_vars_list[1:])
+        best_lambda_, best_n_f = split_cv_df.query("variable==@validation_metric").value.idxmax()
+        best_value = split_cv_df.value.max()
+        param_df.append([s_ver, best_lambda_, best_n_f, best_value, validation_metric])
+    param_df = pd.DataFrame(param_df, columns=['split_version', 'lambda_', 'num_features', 'best_value', 'metric'])
+    return param_df
+
+'''
+def visualize_s3d_model_reader(model_folder, dim, thres):
+    levels = pd.read_csv(model_folder+'/levels.csv')
+    chosen_features = levels.loc[:,'best_feature'].values
+
+    # `splits.csv`: bins for each feature
+    splits = []
+    with open(model_folder+'splits.csv') as f:
+        for line in f:
+            ## [1:] to skip feature names
+            splits.append([float(x) for x in line.split()[0].split(',')[1:]])
+    for split in splits:
+        if split[0] == split[1]: # sinlge point interval
+            if split[1] == 0:
+                split[1] = 0.1
+            else:
+                split[0] = split[0]-1
+
+    # `ybar_tree.csv`: the average y values in each bin
+    ybars = []
+    with open(model_folder+'ybar_tree.csv') as f:
+        for line in f:
+            ybars.append([float(x) for x in line.split()[0].split(',')])
+
+    #`N_tree.csv`: the number of data points in each bin
+    Ns = []
+    with open(model_folder+'/N_tree.csv') as f:
+        for line in f:
+            Ns.append([int(x) for x in line.split()[0].split(',')])
+    splits_at_dim = splits[:dim]
+    Ns_sublist = Ns[dim]
+    intensity = ybars[dim]
 
     intensity_mesh = pd.np.reshape(pd.np.array(intensity),
                                    list(map(lambda x:len(x)-1, splits_at_dim)))
@@ -312,105 +547,4 @@ def visualize_s3d(model_folder, dim, thres=0.5, chosen_features=None,
                               fontsize, cbar_aspect, labelpad,
                               intensity_cmap, pred_cmap, scale)
     return fig
-
-
-def visualize_feature_network_contruct(model_folder, node_label_mapping, color_choice, isolated_option):
-    ''' helper function to visualize feature network '''
-
-    r2_improv_df = pd.read_csv(model_folder+'R2improvements.csv')
-    ## construct graph
-    g = nx.DiGraph()
-    selected_nodes = r2_improv_df.idxmax(axis=1).values
-    unselected_nodes = set(r2_improv_df.columns) - set(selected_nodes)
-    isolated_nodes = list(nx.isolates(g))
-    g.add_nodes_from(selected_nodes, color=color_choice['selected'])
-    g.add_nodes_from(unselected_nodes, color=color_choice['unselected'])
-    for idx, series in r2_improv_df.iterrows():
-        if idx+1 == r2_improv_df.shape[0]:
-            break
-        ## selected one has the largest val
-        selected_feature = series.idxmax()
-        #print(selected_feature)
-        ## for each unselected ones, create edges
-        for feature in r2_improv_df.columns:
-            if feature == selected_feature:
-                continue
-            ## skip edges w/o r2 improvement
-            w = series.loc[feature] - r2_improv_df.loc[idx+1, feature]
-            if w == 0:
-                continue
-            g.add_edge(feature, selected_feature, weight=w)
-    draw_node_list = set(g)
-    if isolated_option == 'remove':
-        draw_node_list = set(g) - set(nx.isolates(g))
-    else:
-        if isolated_option != 'color':
-            warnings.warn('isolated option not understood (remove/color).\nUse color option by default')
-        color_dict = nx.get_node_attributes(g, 'color')
-        for u in nx.isolates(g):
-            color_dict[u] = color_choice['isolated']
-        nx.set_node_attributes(g, color_dict, 'color')
-
-    if node_label_mapping is not None:
-        nx.relabel_nodes(g, node_label_mapping, False)
-
-    return g, draw_node_list
-
-def visualize_feature_network(model_folder,
-                              node_label_mapping=None,
-                              color_choice=dict(zip(['selected', 'unselected', 'isolated'],
-                                                    palettable.colorbrewer.qualitative.Pastel1_3.hex_colors)),
-                              isolated_option='remove', layout=None,
-                              w_scale=200, node_size=800, figsize=(10,10),
-                              arrowsize=20, arrowstyle='->',
-                              edge_color='k', edge_weight_list=None,
-                              edge_kwargs={}, node_kwargs={}, label_kwargs={},
-                             ):
-    g, draw_node_llist = visualize_feature_network_contruct(model_folder, node_label_mapping,
-                                                            color_choice,
-                                                            isolated_option)
-
-    if edge_weight_list is None:
-        edge_weight_list = list(nx.get_edge_attributes(g, 'weight').values())
-        edge_weight_list = abs(pd.np.array(edge_weight_list)*w_scale)
-
-    node_color_list = list(nx.get_node_attributes(g, 'color').values())
-
-    if layout is None:
-        layout = nx.circular_layout(g)
-
-    fig, ax = plt.subplots(figsize=figsize)
-    labels = nx.draw_networkx_labels(g, layout, ax=ax, **label_kwargs)
-    edges = nx.draw_networkx_edges(g, layout, arrowstyle=arrowstyle,
-                                   arrowsize=arrowsize, edge_color=edge_color,
-                                   width=edge_weight_list, ax=ax,
-                                   **edge_kwargs
-                                  )
-    nodes = nx.draw_networkx_nodes(g, layout, ax=ax,
-                                   node_size=node_size,
-                                   node_color=node_color_list,
-                                   **node_kwargs
-                                  )
-    #fig.set_frameon(False)
-    _ = ax.axis('off')
-    return g, (fig, ax)
-
-def find_best_param(performance_file, validation_metric):
-    df = pd.read_csv(performance_file)
-    id_vars_list = ['split_version', 'lambda_', 'num_features']
-    cv_df = df.groupby(id_vars_list).mean()[[validation_metric, 'train_r2']]
-
-    ## reshape the data
-
-    cv_df = cv_df.reset_index().melt(id_vars=id_vars_list,
-                                     value_vars=[validation_metric, 'train_r2'])
-
-    ## group by each `split_version` to obtain the best `lambda_` and `num_features`
-    param_df = list()
-    for s_ver, split_cv_df in cv_df.groupby('split_version'):
-        split_cv_df = split_cv_df.set_index(id_vars_list[1:])
-        best_lambda_, best_n_f = split_cv_df.query("variable==@validation_metric").value.idxmax()
-        best_value = split_cv_df.value.max()
-        param_df.append([s_ver, best_lambda_, best_n_f, best_value, validation_metric])
-    param_df = pd.DataFrame(param_df, columns=['split_version', 'lambda_', 'num_features', 'best_value', 'metric'])
-    return param_df
+'''
