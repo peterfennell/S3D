@@ -3,16 +3,17 @@ from contextlib import redirect_stdout
 from joblib import Parallel, delayed, cpu_count
 import subprocess, os, shutil, time, utils, io, sys, warnings
 
-
 class PYS3D(object):
     ''' a wrapper function to run s3d in python
         make it similar to sklearn interfaces
     '''
     def __init__(self,
                  data_name,
-                 data_path = '../splitted_data/',
-                 model_path = 'models/',
-                 prediction_path = 'predictions/'):
+                 data_path='../splitted_data/',
+                 model_path='models/',
+                 prediction_path='predictions/',
+                 classification_flag=True,
+                 ):
         ''' initializer
 
             parameters
@@ -25,6 +26,8 @@ class PYS3D(object):
                 base path for output of built models
             prediction_path : str
                 base path for predicted expectations
+            classification_flag : bool
+                whether this is classification or regression. tihis is used for determining evaluation metrics
 
             for each path, we assume that there are sub folders for each test fold
         '''
@@ -256,7 +259,11 @@ class PYS3D(object):
 
             ## prediction values based on probability scores
             y_pred = (y_score >= thres).astype(int)
-            series = utils.obtain_metric(y_true, y_pred, y_score)
+            if self.classification_flag:
+                series = utils.obtain_metric_classification(y_true, y_pred, y_score)
+            else:
+                series = utils.obtain_metric_regression(y_true, y_pred, y_score)
+
             series.loc['num_features'] = n_f
             series.loc['threshold'] = thres
             result_df.append(series)

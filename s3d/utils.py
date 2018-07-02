@@ -7,10 +7,11 @@ from matplotlib import gridspec
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
 from sklearn.metrics import roc_auc_score, f1_score, accuracy_score, r2_score
+from sklearn.metrics import median_absolute_error, mean_squared_error, mean_absolute_error
 
 sns.set_context("paper", font_scale=2)
 
-def obtain_metric(y_true, y_pred, y_score):
+def obtain_metric_classification(y_true, y_pred, y_score):
     acc = accuracy_score(y_true, y_pred)
     f1_binary = f1_score(y_true, y_pred, average='binary')
     f1_macro = f1_score(y_true, y_pred, average='macro')
@@ -24,6 +25,18 @@ def obtain_metric(y_true, y_pred, y_score):
          'auc_micro': auc_micro, 'f1_binary':f1_binary,
          'f1_macro': f1_macro, 'f1_micro': f1_micro, 'r2': r2}
     return pd.Series(d)
+
+def obtain_metric_regression(y_true, y_pred, y_score):
+    r2 = r2_score(y_true, y_pred)
+    mae_median = median_absolute_error(y_true, y_pred)
+    mae = mean_absolute_error(y_true, y_pred)
+    mse = mean_squared_error(y_true, y_pred)
+
+    d = {'r2': r2, 'mae_median': mae_median,
+            'mae': mae, 'mse': mse}
+
+    return pd.Series(d)
+
 
 def visualize_cv(performance_file,
                  split_version,
