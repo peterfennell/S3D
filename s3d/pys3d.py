@@ -455,7 +455,7 @@ class PYS3D(object):
         #if df['num_features'].max() < num_features:
         #    return pd.DataFrame()
 
-        series = df.set_index('num_features').loc[num_features]
+        series = df.set_index('num_features').loc[df.num_features.max()]
         series['lambda_'] = lambda_
         series['split_version'] = fold_index
         return series
