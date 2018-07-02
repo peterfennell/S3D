@@ -27,13 +27,14 @@ def obtain_metric_classification(y_true, y_pred, y_score):
     return pd.Series(d)
 
 def obtain_metric_regression(y_true, y_pred):
+    ''' for regression metrics, set errors to be negative (to pick the largest ones) '''
     r2 = r2_score(y_true, y_pred)
-    mae_median = median_absolute_error(y_true, y_pred)
-    mae = mean_absolute_error(y_true, y_pred)
-    mse = mean_squared_error(y_true, y_pred)
+    mae_median = -median_absolute_error(y_true, y_pred)
+    mae = -mean_absolute_error(y_true, y_pred)
+    mse = -mean_squared_error(y_true, y_pred)
 
     d = {'r2': r2, 'mae_median': mae_median,
-            'mae': mae, 'mse': mse}
+         'mae': mae, 'mse': mse}
 
     return pd.Series(d)
 
@@ -379,7 +380,7 @@ def find_best_param(performance_file, validation_metric):
     for s_ver, split_cv_df in cv_df.groupby('split_version'):
         split_cv_df = split_cv_df.set_index(id_vars_list[1:])
         best_lambda_, best_n_f = split_cv_df.query("variable==@validation_metric").value.idxmax()
-        best_value = split_cv_df.value.max()
+        best_value = split_cv_df.query("variable==@validation_metric").value.max()
         param_df.append([s_ver, best_lambda_, best_n_f, best_value, validation_metric])
     param_df = pd.DataFrame(param_df, columns=['split_version', 'lambda_', 'num_features', 'best_value', 'metric'])
     return param_df
