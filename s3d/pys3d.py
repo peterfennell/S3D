@@ -37,6 +37,7 @@ class PYS3D(object):
         self.data_path = data_path + self.data_name + '/'
         self.model_path = model_path + self.data_name + '/'
         self.prediction_path = prediction_path + self.data_name + '/'
+        self.classification_flag = classification_flag
         ## check path validity
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
@@ -253,19 +254,18 @@ class PYS3D(object):
             ## probability scores
             y_score = pd.np.loadtxt(prediction_path+'predicted_expectations_MF_{}.csv'.format(n_f))
 
-            if calc_threshold and train_data_path is not None:
-                thres = self.calculate_disc_threshold(train_model_path, n_f)
-                print('threshold based on trianing set:', thres, 'for', n_f, 'features')
-
             ## prediction values based on probability scores
-            y_pred = (y_score >= thres).astype(int)
             if self.classification_flag:
+                if calc_threshold and train_data_path is not None:
+                    thres = self.calculate_disc_threshold(train_model_path, n_f)
+                    print('threshold based on trianing set:', thres, 'for', n_f, 'features')
+                y_pred = (y_score >= thres).astype(int)
                 series = utils.obtain_metric_classification(y_true, y_pred, y_score)
+                series.loc['threshold'] = thres
             else:
-                series = utils.obtain_metric_regression(y_true, y_pred, y_score)
+                series = utils.obtain_metric_regression(y_true, y_score)
 
             series.loc['num_features'] = n_f
-            series.loc['threshold'] = thres
             result_df.append(series)
         #print('y pred size:', y_pred.size)
         #print(utils.obtain_metric(y_true, y_pred))
@@ -449,16 +449,25 @@ class PYS3D(object):
         prediction_path, train_data_path=train_data_path,
         calc_threshold=True)
         #df.set_index('num_features').loc[num_features]
-        if df['num_features'].max() < num_features:
-            return pd.DataFrame()
+
+        ## since we've already updated `max_features` in `score` functions
+        ## skip this step
+        #if df['num_features'].max() < num_features:
+        #    return pd.DataFrame()
 
         series = df.set_index('num_features').loc[num_features]
         series['lambda_'] = lambda_
         series['split_version'] = fold_index
         return series
 
-    def evaluate(self, cv_metric='auc_micro', num_jobs=1):
+    def evaluate(self, cv_metric=None, num_jobs=1):
         ''' evaluate s3d on the held out test set using the best parameters based on '''
+
+        if cv_metric is None and self.classification_flag:
+            cv_metric = 'auc_micro'
+        elif cv_metric is None and not self.classification_flag:
+            cv_metric = 'r2'
+
         fold_list = pd.np.arange(self.num_folds)
 
         num_jobs = min(num_jobs, cpu_count())

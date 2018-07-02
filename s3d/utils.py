@@ -26,7 +26,7 @@ def obtain_metric_classification(y_true, y_pred, y_score):
          'f1_macro': f1_macro, 'f1_micro': f1_micro, 'r2': r2}
     return pd.Series(d)
 
-def obtain_metric_regression(y_true, y_pred, y_score):
+def obtain_metric_regression(y_true, y_pred):
     r2 = r2_score(y_true, y_pred)
     mae_median = median_absolute_error(y_true, y_pred)
     mae = mean_absolute_error(y_true, y_pred)
@@ -122,7 +122,7 @@ def visualize_s3d_steps(model_folder, figsize=(8,7), color_list=None):
     width = 0.05
     y = pd.np.arange(df.shape[1])
     if color_list is None:
-        num_color = min(3, df.shape[0])
+        num_color = max(3, df.shape[0])
         color_list = eval('palettable.colorbrewer.qualitative.Pastel1_'+str(num_color)+'.mpl_colors')
     elif len(color_list) < df.shape[0]:
         raise ValueError('color_list does not have enough colors ({}) for lambdas ({})'\

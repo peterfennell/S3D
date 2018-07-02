@@ -27,7 +27,7 @@ class DataSplitter(object):
         self.data_name = data_name
         self.data = pd.read_csv(data_path)
         class_dist_d = self.data['target'].value_counts().to_dict()
-        print('class distribution -', class_dist_d)
+        #print('class distribution -', class_dist_d)
         self.nrows, _ = self.data.shape
 
     def split_data(self, num_folds=5, num_jobs=1):
@@ -99,7 +99,7 @@ class DataSplitter(object):
 
         X = train_data[train_data.columns[train_data.columns!='target']].values
         y = train_data['target'].values
-        print(pd.np.bincount(y))
+        #print(pd.np.bincount(y))
 
         skf = StratifiedKFold(n_splits=self.num_folds-1, shuffle=True, random_state=random_state)
 
