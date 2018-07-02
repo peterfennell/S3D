@@ -109,7 +109,8 @@ def visualize_s3d_steps(model_folder, figsize=(8,7), color_list=None):
     width = 0.05
     y = pd.np.arange(df.shape[1])
     if color_list is None:
-        color_list = eval('palettable.colorbrewer.qualitative.Pastel1_'+str(df.shape[0])+'.mpl_colors')
+        num_color = min(3, df.shape[0])
+        color_list = eval('palettable.colorbrewer.qualitative.Pastel1_'+str(num_color)+'.mpl_colors')
     elif len(color_list) < df.shape[0]:
         raise ValueError('color_list does not have enough colors ({}) for lambdas ({})'\
                           .format(len(color_list), df.shape[0]))
@@ -319,6 +320,7 @@ def visualize_feature_network(model_folder,
                               edge_color='k', edge_weight_list=None,
                               edge_kwargs={}, node_kwargs={}, label_kwargs={},
                              ):
+
     g, draw_node_llist = visualize_feature_network_contruct(model_folder, node_label_mapping,
                                                             color_choice,
                                                             isolated_option)
@@ -327,7 +329,8 @@ def visualize_feature_network(model_folder,
         edge_weight_list = list(nx.get_edge_attributes(g, 'weight').values())
         edge_weight_list = abs(pd.np.array(edge_weight_list)*w_scale)
 
-    node_color_list = list(nx.get_node_attributes(g, 'color').values())
+    color_dict = nx.get_node_attributes(g, 'color')
+    node_color_list = [color_dict[u] for u in g.nodes()]
 
     if layout is None:
         layout = nx.circular_layout(g)
