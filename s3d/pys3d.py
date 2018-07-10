@@ -308,7 +308,8 @@ class PYS3D(object):
         ## train data of the `fold_index`-th fold
         train_data_path = self.data_path + '{}/train.csv'.format(fold_index)
         ## the number of rows for training is recorded in a separate file
-        num_train_rows, _ = open(self.data_path + '{}/num_rows.csv'.format(fold_index)).readlines()
+        with open(self.data_path + '{}/num_rows.csv'.format(fold_index)) as _f:
+            num_train_rows, _ = _f.readlines()
         num_train_rows = int(num_train_rows)
         #print(num_train_rows)
         ## scan through each fold
