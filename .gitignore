@@ -133,3 +133,6 @@ test-folder/
 
 *.log
 *.sh
+
+data/
+splitted_data/
