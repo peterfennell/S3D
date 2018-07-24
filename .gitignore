@@ -130,3 +130,6 @@ cv/
 models/
 predictions/
 test-folder/
+
+*.log
+*.sh
