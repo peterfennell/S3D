@@ -1,0 +1,6 @@
+,best_params,fold_index,mae,mae_median,mse,r2
+0,"{'bootstrap': False, 'criterion': 'mae', 'max_features': 34, 'min_samples_leaf': 2}",0,-0.1390800076699783,-0.11134485638991176,-0.03362118204228354,0.967640160496961
+1,"{'bootstrap': False, 'criterion': 'mae', 'max_features': 30, 'min_samples_leaf': 1}",1,-0.15474934128417484,-0.13219106390014745,-0.04038574016797988,0.9691282961311599
+2,"{'bootstrap': False, 'criterion': 'mse', 'max_features': 34, 'min_samples_leaf': 1}",2,-0.13190912721086745,-0.10873951706561262,-0.02952951102314047,0.9601015558358662
+3,"{'bootstrap': False, 'criterion': 'mae', 'max_features': 34, 'min_samples_leaf': 1}",3,-0.1506061086676038,-0.10927781291839928,-0.041748765325168184,0.9645832399315298
+4,"{'bootstrap': False, 'criterion': 'mse', 'max_features': 34, 'min_samples_leaf': 1}",4,-0.1426972982534603,-0.10970080023628492,-0.035319419879994325,0.9534801704257004

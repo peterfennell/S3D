@@ -6,7 +6,7 @@ from sklearn.model_selection import StratifiedKFold, KFold
 
 warnings.simplefilter("once")
 
-random_state=10
+random_state=100
 
 class DataSplitter(object):
     ''' split data;

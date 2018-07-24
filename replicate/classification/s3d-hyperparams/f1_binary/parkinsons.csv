@@ -1,0 +1,6 @@
+split_version,lambda_,num_features,best_value,metric
+0,1e-05,1,0.9141645911166458,f1_binary
+1,1e-05,1,0.8818409213838263,f1_binary
+2,1e-05,1,0.9144196555076097,f1_binary
+3,1e-05,1,0.8630893153281213,f1_binary
+4,1e-05,1,0.8869737997319902,f1_binary

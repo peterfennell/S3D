@@ -1,0 +1,6 @@
+,accuracy,auc_macro,auc_micro,best_params,f1_binary,f1_macro,f1_micro,fold_index,r2,threshold
+0,1.0,1.0,1.0,"{'bootstrap': False, 'criterion': 'gini', 'max_features': 97, 'min_samples_leaf': 1}",1.0,1.0,1.0,0,1.0,0.311320754716981
+1,0.9512195121951219,0.9975845410628019,0.9975845410628019,"{'bootstrap': False, 'criterion': 'entropy', 'max_features': 29, 'min_samples_leaf': 1}",0.9444444444444444,0.9504830917874396,0.9512195121951219,1,0.8019323671497585,0.6509433962264145
+2,1.0,1.0,1.0,"{'bootstrap': False, 'criterion': 'gini', 'max_features': 87, 'min_samples_leaf': 1}",1.0,1.0,1.0,2,1.0,0.59375
+3,0.9487179487179487,0.9946524064171123,0.9946524064171123,"{'bootstrap': False, 'criterion': 'gini', 'max_features': 81, 'min_samples_leaf': 2}",0.9411764705882353,0.9478609625668449,0.9487179487179487,3,0.7914438502673796,0.3963771934849437
+4,1.0,1.0,1.0,"{'bootstrap': False, 'criterion': 'entropy', 'max_features': 27, 'min_samples_leaf': 1}",1.0,1.0,1.0,4,1.0,0.5269565217391301

@@ -1,0 +1,6 @@
+split_version,lambda_,num_features,best_value,metric
+0,0.001,2,0.945094461142121,accuracy
+1,0.003,2,0.9505420781451268,accuracy
+2,1e-05,3,0.9432293902962645,accuracy
+3,1e-05,3,0.948703842851009,accuracy
+4,0.0003,3,0.9397810218978102,accuracy
