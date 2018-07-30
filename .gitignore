@@ -137,5 +137,6 @@ run*.sh
 data/
 splitted_data/
 remove_extra_data.py
+remove_extra_results.py
 test*
 submit*
