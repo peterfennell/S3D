@@ -126,6 +126,7 @@ config.rst
 /.pydevproject
 
 tmp/
+tmp-models/
 cv/
 models/
 predictions/
@@ -140,3 +141,4 @@ remove_extra_data.py
 remove_extra_results.py
 test*
 submit*
+
