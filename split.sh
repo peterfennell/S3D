@@ -1,4 +1,32 @@
 #!/bin/bash
+red=`tput setaf 1`
+green=`tput setaf 2`
+magenta=`tput setaf 5`
+cyan=`tput setaf 6`
+
+RED=`tput setab 1`
+GREEN=`tput setab 2`
+MAGENTA=`tput setab 5`
+CYAN=`tput setab 6`
+
+reset=`tput sgr0`
+
+usage="
+$(basename "$0") [-h] -- program to split a predefined dataset.
+
+checkout ${cyan}split_data.py${reset} for more information by ${cyan}python split_data.py -h${reset}
+
+where:
+    -h  show this help text
+
+example usage:
+    ${cyan}./split.sh${reset}
+"
+
+if [ "$1" == "-h" ]; then
+    echo -e "$usage"
+    exit 0
+fi
 
 ## SPLIT CLS DATASETS
 declare -a data_arr=(

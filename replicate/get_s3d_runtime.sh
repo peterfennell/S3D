@@ -1,5 +1,33 @@
 #1/bin/bash
+red=`tput setaf 1`
+green=`tput setaf 2`
+magenta=`tput setaf 5`
+cyan=`tput setaf 6`
+
+RED=`tput setab 1`
+GREEN=`tput setab 2`
+MAGENTA=`tput setab 5`
+CYAN=`tput setab 6`
+
+reset=`tput sgr0`
+
 ## obtain runtime for s3d
+usage="
+$(basename "$0") [-h] DATANAME LAMBDA_ARR -- program to obtain runtime of s3d over a dataset given an array of lambda values
+
+where:
+    ${cyan}-h${reset}  show this help text
+    ${cyan}DATANAME${reset}  data name
+    ${cyan}LAMBDA_ARR${reset} array of lambda values, separated by space
+
+example usage:
+    ${cyan}./get_s3d_runtime.sh appenergy 0.003 0.003 0.003 0.003 0.001${reset}
+"
+
+if [ "$1" == "-h" ]; then
+    echo "$usage"
+    exit 0
+fi
 
 ## model parameter
 DATANAME=$1
