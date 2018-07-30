@@ -1,9 +1,16 @@
 import os, utils
 
 data_list = [
-             "breastcancer", "magic", "hillvalley", "gisette", "madelon",
-             "default", "spambase", "spectf", "parkinsons", "arcene",
-             "khan", "duolingo", "digg", "duolingo_cleaned"
+             #"breastcancer", "magic", "hillvalley", "gisette", "madelon",
+             #"default", "spambase", "spectf", "parkinsons", "arcene",
+             #"khan", "duolingo", "digg", "duolingo_cleaned"
+             "khan_cleaned", 'stackoverflow_cleaned_subset', "twitter",
+            ]
+
+data_list = [
+             "breastcancer", "spambase", "spectf", "parkinsons",
+             "stackoverflow_cleaned_subset", "khan_cleaned",
+             "digg", "twitter", "duolingo_cleaned"
             ]
 
 metric_list = ['accuracy','auc_macro','auc_micro','f1_binary','f1_macro','f1_micro']

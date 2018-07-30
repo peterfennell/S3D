@@ -1,6 +1,0 @@
-split_version,lambda_,num_features,best_value,metric
-0,0.003,4,0.8674031052757128,auc_macro
-1,0.003,4,0.8674031052757128,auc_macro
-2,0.003,4,0.8687266901331391,auc_macro
-3,0.003,3,0.8682346513358158,auc_macro
-4,0.003,3,0.8682346513358158,auc_macro

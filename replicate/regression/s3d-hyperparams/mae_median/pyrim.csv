@@ -1,6 +1,0 @@
-split_version,lambda_,num_features,best_value,metric
-0,1e-05,10,-1.2981261534947313,mae_median
-1,1e-05,1,-1.3105272588888344,mae_median
-2,1e-05,1,-1.0349818617848414,mae_median
-3,0.003,1,-0.9225003003820128,mae_median
-4,1e-05,1,-1.0239811049257095,mae_median

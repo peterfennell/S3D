@@ -7,10 +7,11 @@ import pandas as pd
 s3d_metric = 'auc_micro'
 
 data_list = [
-             "breastcancer", "magic", "hillvalley", "madelon",
-             "spambase", "spectf", "parkinsons", "arcene",
-             "khan", "duolingo", "digg", "duolingo_cleaned",
+             #"breastcancer", "magic", "hillvalley", "madelon",
+             #"spambase", "spectf", "parkinsons", "arcene",
+             #"khan", "duolingo", "digg", "duolingo_cleaned",
              #"default", "gisette"
+             "khan_cleaned", 'stackoverflow_cleaned_subset', "twitter",
             ]
 
 for i, data_name in enumerate(data_list):

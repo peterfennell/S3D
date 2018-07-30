@@ -132,7 +132,8 @@ predictions/
 test-folder/
 
 *.log
-*.sh
+run*.sh
 
 data/
 splitted_data/
+remove_extra_data.py

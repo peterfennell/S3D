@@ -157,7 +157,7 @@ if __name__ == '__main__':
         dim_df = pd.read_csv('../data/regression-data-dim.csv', index_col=0, squeeze=True)
         num_features = dim_df.loc[data_name]
         num_f = min(num_f, num_features)
-        #params['max_features'] = [num_f]
+        params['max_features'] = [num_f]
 
         cv_wrapper(data_name, reg_name,
                    params, n_jobs=n_jobs,

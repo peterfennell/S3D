@@ -7,6 +7,12 @@ data_list = [
              "parkinsons_motor", "parkinsons_total"
             ]
 
+data_list = ["appenergy", "building_sales", "building_costs",
+             "pol", "breastcancer_reg",
+             "boston_housing", "triazines",
+             "parkinsons_motor", "parkinsons_total",
+            ]
+
 #metric_list = ['accuracy','auc_macro','auc_micro','f1_binary','f1_macro','f1_micro']
 metric_list = ['mse','mae','mae_median','r2']
 for metric in metric_list:

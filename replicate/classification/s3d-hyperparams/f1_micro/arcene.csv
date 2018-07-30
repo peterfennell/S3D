@@ -1,6 +1,0 @@
-split_version,lambda_,num_features,best_value,metric
-0,1e-05,1,0.48445512820512826,f1_micro
-1,1e-05,2,0.5185897435897436,f1_micro
-2,1e-05,1,0.54375,f1_micro
-3,1e-05,1,0.4961890243902439,f1_micro
-4,1e-05,1,0.614939024390244,f1_micro
