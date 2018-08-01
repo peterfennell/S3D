@@ -1,6 +1,6 @@
 ,best_params,fold_index,mae,mae_median,mse,r2
 0,"{'bootstrap': True, 'criterion': 'mse', 'max_features': 1, 'min_samples_leaf': 5}",0,-0.6895040201726749,-0.588109440856942,-0.7360771240950991,0.23475871952953042
-1,"{'bootstrap': True, 'criterion': 'mse', 'max_features': 1, 'min_samples_leaf': 5}",1,-0.6970982251325216,-0.6072931976251212,-0.7627295971334961,0.21875280251734353
-2,"{'bootstrap': True, 'criterion': 'mae', 'max_features': 1, 'min_samples_leaf': 3}",2,-0.6996220432657378,-0.5978235278026444,-0.7610281034489756,0.24129980630456693
-3,"{'bootstrap': True, 'criterion': 'mse', 'max_features': 1, 'min_samples_leaf': 5}",3,-0.7017636193595336,-0.5881232621745762,-0.7762107864477701,0.23203828494775225
+1,"{'bootstrap': True, 'criterion': 'mse', 'max_features': 1, 'min_samples_leaf': 4}",1,-0.6902235828889749,-0.5972960973146577,-0.75513214656652,0.2265347044990812
+2,"{'bootstrap': True, 'criterion': 'mse', 'max_features': 1, 'min_samples_leaf': 5}",2,-0.7230498680166354,-0.6408969222672973,-0.7908825082052212,0.21153672322186168
+3,"{'bootstrap': True, 'criterion': 'mse', 'max_features': 1, 'min_samples_leaf': 3}",3,-0.685971011744779,-0.5818205560270749,-0.7465410224275386,0.2613927377072226
 4,"{'bootstrap': True, 'criterion': 'mse', 'max_features': 1, 'min_samples_leaf': 4}",4,-0.7155568548261432,-0.6473714514278047,-0.7850434579454842,0.24497798612608712

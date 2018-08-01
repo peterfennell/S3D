@@ -4,7 +4,8 @@ from sklearn.svm import LinearSVR
 from sklearn.linear_model import SGDRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV, StratifiedKFold
+#from sklearn.model_selection import GridSearchCV, StratifiedKFold
+from sklearn.model_selection import GridSearchCV, KFold
 from sklearn.metrics import median_absolute_error, mean_squared_error, mean_absolute_error, r2_score
 
 def get_linearsvr(random_state=100, **kwargs):
@@ -49,7 +50,7 @@ def obtain_metric(y_true, y_pred):
 
 def cv_wrapper(data_name, reg_name,
                params, n_jobs=30,
-               scoring='r2', trim_features=False,
+               scoring='neg_mean_squared_error', trim_features=False,
                num_f=None):
 
     ''' wrapper function to do cross val and test given a regressor name '''
@@ -77,8 +78,9 @@ def cv_wrapper(data_name, reg_name,
             X = scaler.fit_transform(X)
             X_test = scaler.transform(X_test)
 
-        ## 5 fold stratefied cross validation
-        #skf = StratifiedKFold(n_splits=5, random_state=100)
+        ## 4 fold cross validation
+        kf = KFold(n_splits=4, random_state=100)
+
         ## if `max_features` is too much, update this:
         if 'max_features' in params and\
            len(params['max_features']) > 1 and\
@@ -87,8 +89,8 @@ def cv_wrapper(data_name, reg_name,
 
         grid = GridSearchCV(eval('get_%s()'%reg_name), params,
                             n_jobs=n_jobs,
-                            scoring=scoring)
-                            #cv=skf)
+                            scoring=scoring,
+                            cv=kf)
         grid.fit(X, y)
 
         ## retrain on the full training data

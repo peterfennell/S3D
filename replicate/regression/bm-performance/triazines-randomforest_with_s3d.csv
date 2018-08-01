@@ -1,0 +1,6 @@
+,best_params,fold_index,mae,mae_median,mse,r2
+0,"{'bootstrap': True, 'criterion': 'mae', 'min_samples_leaf': 1}",0,-0.32552631578947366,-0.13,-0.288928947368421,-0.10961010638297841
+1,"{'bootstrap': True, 'criterion': 'mae', 'min_samples_leaf': 2}",1,-0.2694594594594594,-0.1,-0.19305675675675674,-0.43638423913043467
+2,"{'bootstrap': True, 'criterion': 'mae', 'min_samples_leaf': 1}",2,-0.4754054054054054,-0.36,-0.5240135135135134,0.5305140706806285
+3,"{'bootstrap': True, 'criterion': 'mse', 'min_samples_leaf': 5}",3,-0.44510901646548573,-0.21814313505308702,-0.6169684031106,0.03581079468217874
+4,"{'bootstrap': True, 'criterion': 'mse', 'min_samples_leaf': 3}",4,-0.41140188037078496,-0.30729888018978474,-0.42492429509994223,0.06475665596170255

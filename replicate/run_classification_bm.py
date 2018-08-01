@@ -81,8 +81,8 @@ def cv_wrapper(data_name, clf_name,
             X = scaler.fit_transform(X)
             X_test = scaler.transform(X_test)
 
-        ## 5 fold stratefied cross validation
-        skf = StratifiedKFold(n_splits=5, random_state=100)
+        ## 4 fold stratefied cross validation
+        skf = StratifiedKFold(n_splits=4, random_state=100)
         ## if `max_features` is too much, update this:
         if 'max_features' in params and\
            len(params['max_features']) > 1 and\
