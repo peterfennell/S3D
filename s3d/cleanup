@@ -1,0 +1,8 @@
+#!/bin/bash
+declare -a arr=("tmp" "models" "predictions" "cv")
+
+## now loop through the above array
+for dir in "${arr[@]}"
+do
+    rm -r $dir
+done
