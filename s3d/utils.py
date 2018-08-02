@@ -1,7 +1,7 @@
 import scipy as sp
 import pandas as pd
 import networkx as nx
-import palettable
+import palettable, warnings
 import seaborn as sns
 from matplotlib import gridspec
 from matplotlib import pyplot as plt
@@ -123,7 +123,7 @@ def visualize_cv(performance_file,
 
 def visualize_s3d_steps(model_folder, figsize=(8,7), color_list=None, bar_alpha=1,
                         selectd_lw=4, selected_ls='-', selected_lc='k',
-                        highlight_other=True,
+                        highlight_other=True, max_features=None,
                         other_lw=2, other_ls='--', other_lc='k'):
     ''' visualize the increment of r-squared of s3d model
         Parameters
@@ -139,6 +139,8 @@ def visualize_s3d_steps(model_folder, figsize=(8,7), color_list=None, bar_alpha=
             alpha level of bars (0-1)
         highlight_other : bool
             whether or not to highlight features with equal contribution to $R^2$
+        max_features : int
+           if an integer, pick top `max_features` features at step 1 to be present in the bar chart and drop all others. if none (default), list all features.
         {selected,other}_{lw,ls,lc} : float/str
             line width/style/color for bar outlines
     '''
@@ -147,9 +149,24 @@ def visualize_s3d_steps(model_folder, figsize=(8,7), color_list=None, bar_alpha=
     df = pd.read_csv(model_folder+'R2improvements.csv')
     ## read in the selected ones
     selected_feature_arr = pd.read_csv(model_folder+'levels.csv')['best_feature'].values
-    #print(df)
     df = df.T.sort_values(0).T
-    #print(df.T)
+    if max_features is not None:
+        if max_features < selected_feature_arr.size:
+            warnings.warn('max_features auto set to the size of selected features\n(change from {} to {})'.format(max_features,
+                                                                                                                  selected_feature_arr.size))
+            max_features = selected_feature_arr.size
+        elif max_features > df.shape[1]:
+            warnings.warn('max_features ({}) corrected to the total number of features ({})'.format(max_features, df.shape[1]))
+            max_features = df.shape[1]
+        ## pick the rest of the top features (at step 1) given that all selected features are included 
+        other_size = max_features - selected_feature_arr.size
+        #print('other_size', other_size)
+        other_selected_feature = [col for col in df.columns[::-1] if col not in selected_feature_arr][:other_size]
+        #print(other_selected_feature)
+        df = df[selected_feature_arr.tolist()+other_selected_feature]
+        #print(df)
+        df = df.T.sort_values(0).T
+
     fig, ax = plt.subplots(figsize=figsize)
     left_base = 0
     width = 0.05
@@ -194,6 +211,9 @@ def visualize_s3d_steps(model_folder, figsize=(8,7), color_list=None, bar_alpha=
                   prop={'size': 12},
                   ncol=df.shape[0],
                   bbox_to_anchor=(0.5, 1.1))
+    ## finally, remove legend patches outlines
+    for legend_h in ax.legend_.legendHandles:
+        legend_h.set_linewidth('0')
     return (fig, ax)
 
 
