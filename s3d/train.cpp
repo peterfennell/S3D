@@ -42,6 +42,8 @@
 #include <cmath>
 #include <string>
 #include <algorithm>
+#include <cstring>
+#include <limits>
 
 using namespace std;
 

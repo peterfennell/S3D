@@ -21,6 +21,8 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <cstring>
+#include <limits>
 
 using namespace std;
 
