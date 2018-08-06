@@ -270,6 +270,10 @@ def visualize_s3d_model(dim, splits_at_dim, cmap,
                         cb_kwargs={'aspect': 15},
                         cb_label_kwargs={'labelpad': 30, 'rotation': 270}
                         ):
+    if dim == 1:
+        msg = 'dim must be 2, 3, or 4 to use this function\n'
+        msg += 'if you want to plot 1d visualization, use `visualization_s3d_model_1d`'
+        raise ValueError(msg)
     nrows = ncols = 1
     if dim == 3:
         ncols = len(splits_at_dim[0])-1

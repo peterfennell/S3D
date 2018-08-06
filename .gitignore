@@ -131,3 +131,6 @@ models/
 predictions/
 test-folder/
 test-*
+
+predict_expectations
+train
