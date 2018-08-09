@@ -1,20 +1,23 @@
+import warnings
 import pandas as pd
-import os, sys, time, argparse, warnings
+import os, sys, time, argparse
 from joblib import Parallel, delayed
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import StratifiedKFold, KFold
 
-warnings.simplefilter("once")
+#warnings.simplefilter("once")
 
 random_state=10
 
 class DataSplitter(object):
     ''' split data;
         stratefied for classification; regulalr k-fold for regression
-        for regression data, standardize data (both X and y; using scaler fit by training set on test set)
+        for regression data, standardize data by default but can be turned off by setting standardize_flag to 0 (both X and y; using scaler fit by training set on test set)
     '''
     def __init__(self, data_path, data_name,
-                 classification_flag=True, outfolder=None):
+                 classification_flag=True,
+                 standardize_flag=True,
+                 outfolder=None):
 
         ''' initializer
             parameters
@@ -24,7 +27,9 @@ class DataSplitter(object):
             data_name : str
                 name of data; for saving
             classification_flag : bool
-                whether it's for regression or classification
+                whether it's for regression or classification (default True)
+            standardize_flag : bool
+                whether features will be standardized (default True)
             outfolder : string
                 output folder directory
         '''
@@ -40,6 +45,9 @@ class DataSplitter(object):
         #print('class distribution -', class_dist_d)
         self.nrows, _ = self.data.shape
         self.classification_flag = classification_flag
+        self.standardize_flag = standardize_flag
+        if not self.classification_flag and self.standardize_flag:
+            print('standardize values')
 
     def split_data(self, num_folds=5, num_jobs=1):
         ''' generate equal folds of data. this is mainly for s3d
@@ -96,8 +104,8 @@ class DataSplitter(object):
         train_values = self.data.values[train_index]
         test_values = self.data.values[test_index]
         ## fit a scaler using training data
-        ## transofrm is for regression
-        if not self.classification_flag:
+        ## transofrm is for regression if standardize_flag==True
+        if not self.classification_flag and self.standardize_flag:
             scaler = StandardScaler()
             train_values = scaler.fit_transform(train_values)
             test_values = scaler.transform(test_values)
@@ -144,6 +152,9 @@ if __name__ == '__main__':
     parser.add_argument("-cf", "--classification-flag", type=int,
                         choices=[0, 1], default=1,
                         help="whether the dataset is for classification or not (default 1 - yes); 0 for regression")
+    parser.add_argument("-s", "--standardize-flag", type=int,
+                        choices=[0, 1], default=1,
+                        help="whether features will be standardized (based on training data); only for regression (when -cf set to 0)")
     parser.add_argument("-j", "--num-jobs", type=int, default=1,
                         help="the number of parallel jobs (default 1)")
 
@@ -151,10 +162,8 @@ if __name__ == '__main__':
 
     data_path = 'data/{}.csv'.format(args.data_name)
 
-    if args.classification_flag == 1:
-        classification_flag = True
-    else:
-        classification_flag = False
+    ds = DataSplitter(data_path, args.data_name,
+                      bool(args.classification_flag),
+                      bool(args.standardize_flag))
 
-    ds = DataSplitter(data_path, args.data_name, classification_flag)
     ds.split_data(args.num_folds, args.num_jobs)
