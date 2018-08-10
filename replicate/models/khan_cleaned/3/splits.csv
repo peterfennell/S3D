@@ -1,0 +1,5 @@
+time_to_solve_problem,0,0,6,11,17,26,41,68,157,1.70965e+06
+num_all_solved_wo_hints,0,1,3,631,3763,13348
+total_attempts,5,10,26,174,978,1750,4401,6057,10459,12163,20879
+num_first_five_solved_wo_hints,0,1,2,3,4,5
+time_since_previous_problem,-1,1,28,40,70,107,227,5.0232e+07

@@ -1,0 +1,4 @@
+total_history_seen,total_history_correct,num_distinct_words_lesson,lesson_index_user,time_to_next_lesson_user,time_since_previous_lesson_user,user_sequence_num,lesson_index_seq,num_lessons_seq,time_diff_first_this_last_previous,time_diff_first_last_seq,day_of_week,weekend_bool,hour_of_day,num_all_solved,time_interval,num_lessons,num_sequences
+0.0473736,0.0437276,0.062878,0.0020827,0.00875143,0.0183721,0,0.00377302,0.00376562,0.000496619,0.000883262,0,0,0,0.0781943,0.000750256,0.00585868,0.000422349
+0.0462843,0.0419657,0.0533616,0.0321848,0.0112081,0.0111253,0.0121197,0.00179799,0.00672668,0.00488996,0.00493487,0,0,0,0,0.0105873,0.0978443,0.0322102
+0.0305533,0.0292865,0.0387654,0.000790334,0.00483218,0.00967545,0,0.00213305,0.000646335,0,0,0,0,0,0,0,0,0.000298119

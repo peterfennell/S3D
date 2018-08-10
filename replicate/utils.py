@@ -1,7 +1,7 @@
 import scipy as sp
 import pandas as pd
 import networkx as nx
-import palettable
+import palettable, warnings
 import seaborn as sns
 from matplotlib import gridspec
 from matplotlib import pyplot as plt
@@ -123,7 +123,7 @@ def visualize_cv(performance_file,
 
 def visualize_s3d_steps(model_folder, figsize=(8,7), color_list=None, bar_alpha=1,
                         selectd_lw=4, selected_ls='-', selected_lc='k',
-                        highlight_other=True,
+                        highlight_other=True, max_features=None,
                         other_lw=2, other_ls='--', other_lc='k'):
     ''' visualize the increment of r-squared of s3d model
         Parameters
@@ -139,6 +139,8 @@ def visualize_s3d_steps(model_folder, figsize=(8,7), color_list=None, bar_alpha=
             alpha level of bars (0-1)
         highlight_other : bool
             whether or not to highlight features with equal contribution to $R^2$
+        max_features : int
+           if an integer, pick top `max_features` features at step 1 to be present in the bar chart and drop all others. if none (default), list all features.
         {selected,other}_{lw,ls,lc} : float/str
             line width/style/color for bar outlines
     '''
@@ -147,9 +149,24 @@ def visualize_s3d_steps(model_folder, figsize=(8,7), color_list=None, bar_alpha=
     df = pd.read_csv(model_folder+'R2improvements.csv')
     ## read in the selected ones
     selected_feature_arr = pd.read_csv(model_folder+'levels.csv')['best_feature'].values
-    #print(df)
     df = df.T.sort_values(0).T
-    #print(df.T)
+    if max_features is not None:
+        if max_features < selected_feature_arr.size:
+            warnings.warn('max_features auto set to the size of selected features\n(change from {} to {})'.format(max_features,
+                                                                                                                  selected_feature_arr.size))
+            max_features = selected_feature_arr.size
+        elif max_features > df.shape[1]:
+            warnings.warn('max_features ({}) corrected to the total number of features ({})'.format(max_features, df.shape[1]))
+            max_features = df.shape[1]
+        ## pick the rest of the top features (at step 1) given that all selected features are included 
+        other_size = max_features - selected_feature_arr.size
+        #print('other_size', other_size)
+        other_selected_feature = [col for col in df.columns[::-1] if col not in selected_feature_arr][:other_size]
+        #print(other_selected_feature)
+        df = df[selected_feature_arr.tolist()+other_selected_feature]
+        #print(df)
+        df = df.T.sort_values(0).T
+
     fig, ax = plt.subplots(figsize=figsize)
     left_base = 0
     width = 0.05
@@ -194,6 +211,9 @@ def visualize_s3d_steps(model_folder, figsize=(8,7), color_list=None, bar_alpha=
                   prop={'size': 12},
                   ncol=df.shape[0],
                   bbox_to_anchor=(0.5, 1.1))
+    ## finally, remove legend patches outlines
+    for legend_h in ax.legend_.legendHandles:
+        legend_h.set_linewidth('0')
     return (fig, ax)
 
 
@@ -250,6 +270,10 @@ def visualize_s3d_model(dim, splits_at_dim, cmap,
                         cb_kwargs={'aspect': 15},
                         cb_label_kwargs={'labelpad': 30, 'rotation': 270}
                         ):
+    if dim == 1:
+        msg = 'dim must be 2, 3, or 4 to use this function\n'
+        msg += 'if you want to plot 1d visualization, use `visualization_s3d_model_1d`'
+        raise ValueError(msg)
     nrows = ncols = 1
     if dim == 3:
         ncols = len(splits_at_dim[0])-1
@@ -285,9 +309,10 @@ def visualize_s3d_model(dim, splits_at_dim, cmap,
                                norm=norm
                               )
             ax.set_xscale(xscale)
-            ax.set_xlim(max(1, min(splits_at_dim[dim-2])), max(splits_at_dim[dim-2]))
+            ## do not limit x/y axes values
+            #ax.set_xlim(max(1, min(splits_at_dim[dim-2])), max(splits_at_dim[dim-2]))
             ax.set_yscale(yscale)
-            ax.set_ylim(max(1, min(splits_at_dim[dim-1])), max(splits_at_dim[dim-1]))
+            #ax.set_ylim(max(1, min(splits_at_dim[dim-1])), max(splits_at_dim[dim-1]))
 
             if dim > 2 and i == nrows-1:
                 xlab_str = '{}'.format(chosen_features[dim-2])
@@ -488,184 +513,3 @@ def find_best_param(performance_file, validation_metric):
         param_df.append([s_ver, best_lambda_, best_n_f, best_value, validation_metric])
     param_df = pd.DataFrame(param_df, columns=['split_version', 'lambda_', 'num_features', 'best_value', 'metric'])
     return param_df
-
-'''
-def visualize_s3d_model_reader(model_folder, dim, thres):
-    levels = pd.read_csv(model_folder+'/levels.csv')
-    chosen_features = levels.loc[:,'best_feature'].values
-
-    # `splits.csv`: bins for each feature
-    splits = []
-    with open(model_folder+'splits.csv') as f:
-        for line in f:
-            ## [1:] to skip feature names
-            splits.append([float(x) for x in line.split()[0].split(',')[1:]])
-    for split in splits:
-        if split[0] == split[1]: # sinlge point interval
-            if split[1] == 0:
-                split[1] = 0.1
-            else:
-                split[0] = split[0]-1
-
-    # `ybar_tree.csv`: the average y values in each bin
-    ybars = []
-    with open(model_folder+'ybar_tree.csv') as f:
-        for line in f:
-            ybars.append([float(x) for x in line.split()[0].split(',')])
-
-    #`N_tree.csv`: the number of data points in each bin
-    Ns = []
-    with open(model_folder+'/N_tree.csv') as f:
-        for line in f:
-            Ns.append([int(x) for x in line.split()[0].split(',')])
-    splits_at_dim = splits[:dim]
-    Ns_sublist = Ns[dim]
-    intensity = ybars[dim]
-
-    intensity_mesh = pd.np.reshape(pd.np.array(intensity),
-                                   list(map(lambda x:len(x)-1, splits_at_dim)))
-    Ns_mesh = pd.np.reshape(pd.np.array(Ns_sublist),
-                            list(map(lambda x:len(x)-1, splits_at_dim)))
-    pred_masked = ((intensity_mesh >= thres) & (Ns_mesh >0)).astype(int)
-    intensity_masked = pd.np.ma.masked_where((Ns_mesh==0)|(intensity_mesh<=0),
-                                             intensity_mesh)
-    return splits_at_dim, Ns_mesh, intensity_masked, pred_masked, chosen_features[:dim]
-
-def visualize_s3d_model(dim, splits_at_dim, Ns_mesh,
-                        intensity_masked, pred_masked, chosen_features,
-                        vmin, vmax, xscale, yscale,
-                        xlab_x, xlab_y, ylab_x, ylab_y,
-                        unit_w, unit_h, hspace, wspace,
-                        fontsize, cbar_aspect, labelpad,
-                        intensity_cmap, pred_cmap, scale):
-    nrows = ncols = 1
-    if dim == 3:
-        ncols = len(splits_at_dim[0])-1
-    if dim == 4:
-        nrows = len(splits_at_dim[0])-1
-        ncols = len(splits_at_dim[1])-1
-    #print(nrows, ncols) 
-    ## 1 row; 2 columns
-    if dim==3:
-        outer_grid = gridspec.GridSpec(2, 1, hspace=hspace)
-        figsize = (ncols*scale*unit_h, nrows*unit_w*scale)
-        fig = plt.figure(figsize=figsize)
-    else:
-        outer_grid = gridspec.GridSpec(1, 2, wspace=wspace)
-        figsize = (ncols*scale*unit_w, nrows*unit_h*scale)
-        fig = plt.figure(figsize=figsize)
-    masked_list = [intensity_masked, pred_masked]
-    cmap_list = [intensity_cmap, pred_cmap]
-    ## inner grid: for empirical probablity (ybar)
-    inner_grid_ybar = gridspec.GridSpecFromSubplotSpec(ncols=ncols, nrows=nrows, subplot_spec=outer_grid[0])
-    ## inner grid: for binary prediction (dichitomize ybar given a threshold)
-    inner_grid_pred = gridspec.GridSpecFromSubplotSpec(ncols=ncols, nrows=nrows, subplot_spec=outer_grid[1])
-    for idx, inner_g in enumerate([inner_grid_ybar, inner_grid_pred]):
-        masked_arr = masked_list[idx]
-        ax_l = list()
-        for i in range(nrows):
-            for j in range(ncols):
-                ax = plt.Subplot(fig, inner_g[i, j])
-                if dim == 2:
-                    mesh_map = masked_arr
-                elif dim == 3:
-                    mesh_map = masked_arr[j,:,:]
-                else:
-                    mesh_map = masked_arr[nrows-i-1,j,:]
-                if vmin is None:
-                    vmin=masked_arr.min()
-                if vmax is None:
-                    vmax=masked_arr.max()
-                im = ax.pcolormesh(splits_at_dim[dim-2], splits_at_dim[dim-1],
-                                   mesh_map.T, cmap=cmap_list[idx],
-                                   vmin=vmin, vmax=vmax
-                                  )
-                ax.set_xlim(max(1, min(splits_at_dim[dim-2])), max(splits_at_dim[dim-2]))
-                ax.set_xscale(xscale)
-                ax.set_yscale(yscale)
-                ax.set_ylim(max(1, min(splits_at_dim[dim-1])), max(splits_at_dim[dim-1]))
-
-                if ((dim==3 and idx==1) or (dim==4)) and (i==nrows-1):
-                    xlab_str = '{}'.format(chosen_features[dim-2])
-                    xlab_str += '\n$[{}, {})$'.format(splits_at_dim[dim-3][j],
-                                                       splits_at_dim[dim-3][j+1])
-                    ax.set_xlabel(xlab_str, size=fontsize*.7)
-                elif dim < 4 and i == nrows-1:
-                    ax.set_xlabel(chosen_features[0], size=fontsize*.7)
-                else:
-                    ax.set_xticks([])
-
-                if j == 0:
-                    if dim == 4 and idx==0:
-                        ylab_str = '$[{}, {})$\n'.format(splits_at_dim[0][nrows-i-1],
-                                                          splits_at_dim[0][nrows-i])
-                        ylab_str += '{}'.format(chosen_features[dim-1])
-                    elif (dim==2 and idx==0) or (dim==3):
-                        ylab_str = '{}'.format(chosen_features[dim-1])
-                    else:
-                        ylab_str=''
-                        ax.set_yticks([])
-                        ax.set_yticklabels([])
-                    #print(dim, idx, ylab_str)
-                else:
-                    ax.set_yticks([])
-                    ax.set_yticklabels([])
-                    ylab_str=''
-                ax.set_ylabel(ylab_str, size=fontsize*.8)
-                fig.add_subplot(ax, sharey=True, sharex=True)
-                ax_l.append(ax)
-        # colorbar
-        cb = fig.colorbar(im,  ax=ax_l,
-                          fraction=0.046, pad=0.04,
-                          aspect=cbar_aspect)
-        if idx == 0:
-            cb.set_label('$E[Y]$',rotation=270, size=fontsize*0.8, labelpad=labelpad)
-        elif idx==1:
-            cb.set_ticks([0, 1])
-            cb.set_label('Prediction',rotation=270, size=fontsize*0.8, labelpad=labelpad//2)
-        if idx == 0 and dim==4:
-            if ylab_x is None:
-                ylab_x = 0.05*scale
-            if ylab_y is None:
-                ylab_y = 0.6/scale
-            fig.text(x=ylab_x, y=ylab_y, s=chosen_features[0],
-                     size=fontsize, rotation=90)
-    #outer_grid.tight_layout(fig)
-    if dim == 3:
-        if xlab_x is None:
-            xlab_x = .33*scale
-        if xlab_y is None:
-            xlab_y = -0.4/scale
-        fig.text(x=xlab_x, y=xlab_y, s=chosen_features[dim-3], size=fontsize)
-        #fig.suptitle(chosen_features[dim-3], size=15, y=-0.25, x=0.45)
-    elif dim == 4:
-        if xlab_x is None:
-            xlab_x = 0.45
-        if xlab_y is None:
-            xlab_y = 0.01
-        fig.text(x=xlab_x, y=xlab_y, s=chosen_features[dim-3], size=fontsize)
-    else:
-        outer_grid.update(wspace=0.7)
-    return fig
-
-def visualize_s3d(model_folder, dim, thres=0.5, chosen_features=None,
-                  vmin=None, vmax=None, xscale='log', yscale='log',
-                  xlab_x=None, xlab_y=None, ylab_x=None, ylab_y=None,
-                  unit_w=7, unit_h=2.5, hspace=0.7, wspace=0.5,
-                  fontsize=20, cbar_aspect=20, labelpad=20,
-                  intensity_cmap='Greens',
-                  pred_cmap=ListedColormap(['#fbfafa', 'green']), scale=1
-                 ):
-    splits_at_dim, Ns_mesh, intensity_masked, pred_masked, features = visualize_s3d_model_reader(model_folder, dim, thres)
-    if chosen_features is None:
-        chosen_features = features
-    fig = visualize_s3d_model(dim, splits_at_dim, Ns_mesh,
-                              intensity_masked, pred_masked,
-                              chosen_features, vmin, vmax,
-                              xscale, yscale,
-                              xlab_x, xlab_y, ylab_x, ylab_y,
-                              unit_w, unit_h, hspace, wspace,
-                              fontsize, cbar_aspect, labelpad,
-                              intensity_cmap, pred_cmap, scale)
-    return fig
-'''

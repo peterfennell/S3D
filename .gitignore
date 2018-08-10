@@ -127,8 +127,8 @@ config.rst
 
 tmp/
 tmp-models/
-cv/
-models/
+#cv/
+#models/
 predictions/
 test-folder/
 
