@@ -378,7 +378,7 @@ def visualize_s3d_model(dim, splits_at_dim, cmap,
     cb = fig.colorbar(im, ax=ax_arr.ravel().tolist(),
                       pad=0.1/(dim+.5), **cb_kwargs)
     cb.set_label(cbar_label, **cb_label_kwargs)
-    return fig, ax_arr
+    return fig, ax_arr, cb
 
 def visualize_s3d_model_1d(splits_at_dim, masked_arr,
                            xlab=None, ylab=None,
