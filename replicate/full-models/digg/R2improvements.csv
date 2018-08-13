@@ -1,0 +1,4 @@
+day,hour,inv_exposure_rate,meme_age,meme_pop_current,meme_pop_recent,n_exposures,neighb_activity,neighb_indegree,neighb_info_received,neighb_outdegree,node_activity,node_indegree,node_info_received,node_outdegree,order,time_between_last_and_first_exposures,time_between_last_and_second_last_exposures,time_since_nodes_last_tweet
+0,0,0,0,0,0,0,0,0,0,0,0.0111098,0,0,0,0,0,0,0.00211606
+0,0,0.00404837,0.00107399,0.00144815,0.00111557,0.00248863,0.00131117,0.00264017,0.00139847,0,0,0.00612568,0.0162524,0.0106509,0,0.00244521,0.00244521,0.00140148
+0.00234178,0.00328168,0.000997287,0.00161905,0.00652143,0.00485343,0.00103496,0,0.00132392,0.00129797,0.00152716,0,0.0017941,0,0,0,0.00103147,0.000997287,0.00162804

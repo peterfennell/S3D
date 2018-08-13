@@ -55,7 +55,7 @@ const int G_THRESH = 10000000; // Maximum number of bins: when G > G_THRESH, bre
 int main(int argc, char* argv[])
 {
 
-    //cout << "\n* STRUCTURED SUM OF SQUARES DECOMPOSITION ALGORITHM *\n" << endl;
+    cout << "\n* STRUCTURED SUM OF SQUARES DECOMPOSITION ALGORITHM *\n" << endl;
     clock_t start = clock();
     
     // What is the first thing that we do?
@@ -78,13 +78,13 @@ int main(int argc, char* argv[])
         // Required
         if(strncmp(argv[i],"-infile:",8)==0){
             datafile.open(string(argv[i]).erase(0,8).c_str());
-            //cout << " Reading data from " << string(argv[i]).erase(0,8) << endl;
+            cout << " Reading data from " << string(argv[i]).erase(0,8) << endl;
             N = calculate_N(datafile);
             continue;
         }
         if(strncmp(argv[i],"-outfolder:",11)==0){
             outfolder = string(argv[i]).erase(0,11);
-            //cout << " Writing data to folder " << outfolder << endl;
+            cout << " Writing data to folder " << outfolder << endl;
             continue;
         }
         if(strncmp(argv[i],"-lambda:",8)==0)
@@ -115,28 +115,28 @@ int main(int argc, char* argv[])
             continue;
         }
         // Invalid argument, argument doesnt match anything
-        //cout << "ERROR: Unknown argument " << argv[i] << endl;
+        cout << "ERROR: Unknown argument " << argv[i] << endl;
         return 0;
 
     }
-    //cout << " - lambda = " << lambda << endl;
+    cout << " - lambda = " << lambda << endl;
     
     // check if infile is open
     if(!datafile.is_open())
     {
-        //cout << "ERROR: datafile not found" << endl;
+        cout << "ERROR: datafile not found" << endl;
         return 1;
     }
     // check if lambda is given
     if(lambda < 0)
     {
-        //cout << "ERROR: lambda not specified" << endl;
+        cout << "ERROR: lambda not specified" << endl;
         return 1;
     }
     // check to see that end_skip_rows is not behind start skip rows
     if(end_skip_rows < start_skip_rows)
     {
-        //cout << "ERROR: end_skip_rows must be declared greater than start_skip_rows" << endl;
+        cout << "ERROR: end_skip_rows must be declared greater than start_skip_rows" << endl;
         return 1;
     }
     // calculate actual number of rows that we will use
@@ -146,8 +146,7 @@ int main(int argc, char* argv[])
         N = min(n_rows,N) - (end_skip_rows - start_skip_rows); // min here, n_rows should not be greater than N
     // output which rows are being skipped
     if(start_skip_rows > -1)
-        ;
-        //cout << " - skipping rows " << start_skip_rows << " to " << end_skip_rows-1 << " inclusive." << endl;
+        cout << " - skipping rows " << start_skip_rows << " to " << end_skip_rows-1 << " inclusive." << endl;
     
     // -------------------------------
     // 2: Read in features and y data
@@ -159,21 +158,19 @@ int main(int argc, char* argv[])
     int N_columns = features.size();
     // output the features if there are not too many
     if(N_columns > 100)
-        //cout << '\n' << N_columns << " FEATURES" << endl;
-        ;
+        cout << '\n' << N_columns << " FEATURES" << endl;
     else
     {
-        //cout << "\nFEATURES:" << endl;
+        cout << "\nFEATURES:" << endl;
         for(auto it =features.begin(); it!=features.end(); ++it)
             if(*it != features[y_col])
-                //cout << *it << endl;
-                ;
+                cout << *it << endl;
     }
-    //cout << endl;
+    cout << endl;
     
     // Y data:
-    //cout << "TARGET VARIABLE:\n" << features[y_col] << endl << endl;
-    //cout << "Reading in Y data..." << endl;
+    cout << "TARGET VARIABLE:\n" << features[y_col] << endl << endl;
+    cout << "Reading in Y data..." << endl;
     double y, ybar=0, SST=0, R2=0;
 
     for(int r=0; r<N; r++)
@@ -193,9 +190,9 @@ int main(int argc, char* argv[])
     ybar /= N;
     SST -= N*ybar*ybar; // SST = \sum y_i^2 - N*ybar^2
     
-    //cout << 1.0*(clock() - start)/CLOCKS_PER_SEC << " seconds to read in single column." <<  endl;
+    cout << 1.0*(clock() - start)/CLOCKS_PER_SEC << " seconds to read in single column." <<  endl;
     
-    //cout << " - " << N << " rows of data\n - SampleMean(Y) = " << ybar << "\n - SampleSTD(Y) = " << sqrt(1.0*SST/(N-1)) << "\n - SST(Y) = " << SST<< endl;
+    cout << " - " << N << " rows of data\n - SampleMean(Y) = " << ybar << "\n - SampleSTD(Y) = " << sqrt(1.0*SST/(N-1)) << "\n - SST(Y) = " << SST<< endl;
     
     // ----------------------------
     // 3: Declare variables
@@ -241,7 +238,7 @@ int main(int argc, char* argv[])
     ofstream R2improvements_file(string(outfolder).append("/R2improvements.csv").c_str());
     if(!R2improvements_file.is_open())
     {
-        //cout << "ERROR: Outfolder files are not open." << endl;
+        cout << "ERROR: Outfolder files are not open." << endl;
         return 1;
     }
     for(int i=0; i<features.size()-1; i++)
@@ -254,27 +251,27 @@ int main(int argc, char* argv[])
     ofstream splits_file(string(outfolder).append("/splits.csv").c_str());
     if(!splits_file.is_open())
     {
-        //cout << "ERROR: Outfolder files are not open." << endl;
+        cout << "ERROR: Outfolder files are not open." << endl;
         return 1;
     }
     ofstream levels_file(string(outfolder).append("/levels.csv").c_str());
     if(!levels_file.is_open())
     {
-        //cout << "ERROR: Outfolder files are not open." << endl;
+        cout << "ERROR: Outfolder files are not open." << endl;
         return 1;
     }
     levels_file << "best_feature,R2" << endl;
     ofstream ybar_file(string(outfolder).append("/ybar_tree.csv").c_str());
     if(!ybar_file.is_open())
     {
-        //cout << "ERROR: Outfolder files are not open." << endl;
+        cout << "ERROR: Outfolder files are not open." << endl;
         return 1;
     }
     ybar_file << ybar << endl;
     ofstream N_file(string(outfolder).append("/N_tree.csv").c_str());
     if(!N_file.is_open())
     {
-        //cout << "ERROR: Outfolder files are not open." << endl;
+        cout << "ERROR: Outfolder files are not open." << endl;
         return 1;
     }
     N_file << N << endl;
@@ -286,9 +283,9 @@ int main(int argc, char* argv[])
     
     for(int l=0;l<max_features;l++) // Loop over the levels of the tree
     {
-        //cout << "\n--------------------------------------" << endl;
-        //cout << "   CREATING LEVEL " << l+1 << " OF THE TREE."  << endl;
-        //cout << "--------------------------------------" << endl << endl;
+        cout << "\n--------------------------------------" << endl;
+        cout << "   CREATING LEVEL " << l+1 << " OF THE TREE."  << endl;
+        cout << "--------------------------------------" << endl << endl;
         
         // ------------------------------------------------
         // 1: CALCULATE THE R2_improvement FOR EACH FEATURE
@@ -308,24 +305,24 @@ int main(int argc, char* argv[])
                 continue;
             if(chosen_feature[j]==1) // if the feature has already been chosen
             {
-                //cout << " - skipping chosen feature " << features[j] << endl << endl;
+                cout << " - skipping chosen feature " << features[j] << endl << endl;
                 R2improvements_vec.push_back(0);
                 continue;
             }
             if(bad_feature[j]==1) // if its not a wanted feature
             {
-                //cout << " - skipping bad feature " << features[j] << endl << endl;
+                cout << " - skipping bad feature " << features[j] << endl << endl;
                 continue;
             }
             
-            //cout << " - processing " << features[j] << endl;
-            //cout << "   - reading data..." << endl;
+            cout << " - processing " << features[j] << endl;
+            cout << "   - reading data..." << endl;
             
             // i: read in the feature column from file to create cumcount and cumsum vectors
             create_Xj_info(j, cumcount, cumsum, range, datafile, groups, G, y_col, N, start_skip_rows, end_skip_rows);
             // error check on the ybars (deleted as comparing floating point numbers (not good)
             
-            //cout << "   - range: [" << *(range.begin()) << "," << *(std::prev(range.end())) << "]" << endl;
+            cout << "   - range: [" << *(range.begin()) << "," << *(std::prev(range.end())) << "]" << endl;
             
             // ii: initialize the  R2 data and the deltaR2_p map
             R2_improvement = 0;
@@ -358,11 +355,11 @@ int main(int argc, char* argv[])
             pu1 = split;
             
             //for(auto it=cumcount[0].begin(); it != cumcount[0].end(); ++it)
-            //    //cout << it->first << "\t" << it->second << endl;
+            //    cout << it->first << "\t" << it->second << endl;
             
             
-            //cout << "   - splits:" << endl;
-            //cout << "     - (interval, splits, ybars, Ns, R2, delta LF)" << endl;
+            cout << "   - splits:" << endl;
+            cout << "     - (interval, splits, ybars, Ns, R2, delta LF)" << endl;
             
             
             // iii: calculate the rest of the splits until the stopping condition has been reached
@@ -373,8 +370,8 @@ int main(int argc, char* argv[])
                 
                 
                 // output the information
-                //cout << "     - [" << pl << "," << pu << "], splits = [" << pl << "," << split << "] and [" << pl2 << "," << pu << "], ";
-                //cout << " total R2 improvement = " << R2_improvement << ", DL = " << DL.back() << endl;
+                cout << "     - [" << pl << "," << pu << "], splits = [" << pl << "," << split << "] and [" << pl2 << "," << pu << "], ";
+                cout << " total R2 improvement = " << R2_improvement << ", DL = " << DL.back() << endl;
                 
                 // b: calculate the best splits and R2 improvements for the splitted partition
                 calculate_best_split(cumcount, cumsum, pl1, pu1, range, G, split, R2_improvement_s);
@@ -418,14 +415,14 @@ int main(int argc, char* argv[])
             } // splits calculated
             
             
-            //cout << "     - [" << pl << "," << pu << "] split into [" << pl << "," << split << "] and [" << pl2 << "," << pu << "], total R2 improvement = " << R2_improvement << ", DL = " << DL.back() << endl;
-            //cout << "   - Chosen partitions: ";
+            cout << "     - [" << pl << "," << pu << "] split into [" << pl << "," << split << "] and [" << pl2 << "," << pu << "], total R2 improvement = " << R2_improvement << ", DL = " << DL.back() << endl;
+            cout << "   - Chosen partitions: ";
             std::sort(splits.begin(), splits.end());
-            //cout << "[" << *splits.begin() << "," << *std::next(splits.begin()) << "], ";
+            cout << "[" << *splits.begin() << "," << *std::next(splits.begin()) << "], ";
             for(auto it = std::next(std::next(splits.begin())); it!=splits.end(); ++it)
-                //cout << "(" << *std::prev(it) << "," << *it << "], ";
-            //cout << endl;
-            //cout << "   - R2 improvement: " << R2_improvement << endl << endl;
+                cout << "(" << *std::prev(it) << "," << *it << "], ";
+            cout << endl;
+            cout << "   - R2 improvement: " << R2_improvement << endl << endl;
             
             // iv: Record the R2_improvement
             R2improvements_vec.push_back(R2_improvement);
@@ -449,7 +446,7 @@ int main(int argc, char* argv[])
         
         if(R2_improvement_max == 0)
         {
-            //cout << " No further improvements in R2; Breaking" << endl << endl;
+            cout << " No further improvements in R2; Breaking" << endl << endl;
             break;
         }
         
@@ -459,17 +456,17 @@ int main(int argc, char* argv[])
         
         // Save output
         
-        //cout << "SUMMARY:\n - Best feature is " << features[best_feature] << " with R2 improvement of " << R2_improvement_max << "." << endl;
-        //cout << " - Total R2 is now " << R2 << endl;
+        cout << "SUMMARY:\n - Best feature is " << features[best_feature] << " with R2 improvement of " << R2_improvement_max << "." << endl;
+        cout << " - Total R2 is now " << R2 << endl;
         
         // // remove first and last placeholders from best_splts
         // best_splits.pop_back();
         // best_splits.erase(best_splits.begin());
         
         // Update the groupings
-        //cout << " - Updating groups...";
+        cout << " - Updating groups...";
         update_groupings(groups, G, best_feature, best_splits, datafile, N, best_ybar_vec, best_N_vec, y_col, start_skip_rows, end_skip_rows);
-        //cout << G << " groups now." << endl << endl << endl;
+        cout << G << " groups now." << endl << endl << endl;
         
         // i) save the level info
         levels_file << features[best_feature] << ',' << R2 << endl;
@@ -498,7 +495,7 @@ int main(int argc, char* argv[])
         // check to see if G is greater than the breaking threshold
         if(G > G_THRESH)
         {
-            //cout << "Number of groups G = " << G << " is greater than G_THRESH = " << G_THRESH << "; Breaking" << endl << endl;
+            cout << "Number of groups G = " << G << " is greater than G_THRESH = " << G_THRESH << "; Breaking" << endl << endl;
             break;
         }
         
@@ -507,7 +504,7 @@ int main(int argc, char* argv[])
     
     
     clock_t end = clock();
-    //cout << "Time = " << 1.0*(end - start)/CLOCKS_PER_SEC << " seconds." <<  endl;
+    cout << "Time = " << 1.0*(end - start)/CLOCKS_PER_SEC << " seconds." <<  endl;
     
     
 }

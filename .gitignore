@@ -135,7 +135,8 @@ test-folder/
 *.log
 run*.sh
 
-data/
+data/*.csv
+data/data.tar.gz
 splitted_data/
 remove_extra_data.py
 remove_extra_results.py
