@@ -93,7 +93,7 @@ def visualize_cv(performance_file,
                         palette=color_list, row='variable',
                         row_order=['train_r2', validation_metric],
                         hue='lambda_', kind='point', sharey=False,
-                        legend=False, **fp_kwargs,
+                        legend=False, **fp_kwargs
                         #legend_out=True
                        )
 
@@ -393,7 +393,7 @@ def visualize_s3d_model_1d(splits_at_dim, masked_arr,
     for i, val_i in enumerate(masked_arr):
         ax.hlines(y=val_i, xmin=splits[i],
                   xmax=splits[i+1],
-                  **hlines_kwargs,
+                  **hlines_kwargs
                  )
         if i == masked_arr.size-1:
             ymax_val = masked_arr[0]
@@ -401,7 +401,7 @@ def visualize_s3d_model_1d(splits_at_dim, masked_arr,
             ymax_val = masked_arr[i+1]
         ax.vlines(x=splits[i+1], ymin=val_i,
                   ymax=ymax_val,
-                  **vlines_kwargs,
+                  **vlines_kwargs
                  )
     ax.set_xscale(xscale)
     ax.set_yscale(yscale)
