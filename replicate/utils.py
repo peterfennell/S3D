@@ -253,9 +253,12 @@ def visualize_s3d_model_reader(model_folder, dim, thres):
                                    list(map(lambda x:len(x)-1, splits_at_dim)))
     Ns_mesh = pd.np.reshape(pd.np.array(Ns_sublist),
                             list(map(lambda x:len(x)-1, splits_at_dim)))
+    pred_mesh = ((intensity_mesh >= thres) & (Ns_mesh >0))
     N_masked = pd.np.ma.masked_where((Ns_mesh == 0), Ns_mesh)
-    pred_masked = ((intensity_mesh >= thres) & (Ns_mesh >0)).astype(int)
-    intensity_masked = pd.np.ma.masked_where((Ns_mesh==0)|(intensity_mesh<=0),
+    pred_masked = pd.np.ma.masked_where((Ns_mesh == 0), pred_mesh)
+    #intensity_masked = pd.np.ma.masked_where((Ns_mesh==0)|(intensity_mesh<=0),
+    #                                         intensity_mesh)
+    intensity_masked = pd.np.ma.masked_where((Ns_mesh==0),
                                              intensity_mesh)
     return splits_at_dim, N_masked, intensity_masked, pred_masked, chosen_features[:dim]
 
@@ -268,6 +271,7 @@ def visualize_s3d_model(dim, splits_at_dim, cmap,
                         fontsize=15, unit_w=3.3, unit_h=2.4,
                         xbins_lab_decimal=2, ybins_lab_decimal=2,
                         cb_kwargs={'aspect': 15},
+                        pcolor_kwargs={'edgecolor': 'w', 'lw': 3},
                         cb_label_kwargs={'labelpad': 30, 'rotation': 270}
                         ):
     if dim == 1:
@@ -306,7 +310,7 @@ def visualize_s3d_model(dim, splits_at_dim, cmap,
                                mesh_map.T, cmap=cmap,
                                vmin=masked_arr.min(),
                                vmax=masked_arr.max(),
-                               norm=norm
+                               norm=norm, **pcolor_kwargs,
                               )
             ax.set_xscale(xscale)
             ## do not limit x/y axes values
