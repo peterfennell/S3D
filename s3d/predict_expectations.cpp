@@ -23,6 +23,7 @@
 #include <ctime>
 #include <cstring>
 #include <limits>
+#include <algorithm>
 
 using namespace std;
 
