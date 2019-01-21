@@ -1,4 +1,5 @@
 best_feature,R2
-node_activity,0.0111098
-node_info_received,0.0273621
-meme_pop_current,0.0338836
+node_activity,0.00503753
+node_info_received,0.0132856
+node_indegree,0.017682
+meme_pop_recent,0.0216394
