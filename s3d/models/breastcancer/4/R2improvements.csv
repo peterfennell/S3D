@@ -1,0 +1,3 @@
+clump_thickness,cell_size,cell_shape,marginal_adhesion,se_cell_size,bare_nuclei,bland_chromatin,normal_nucleoli,mitoses
+0.577834,0.76182,0.763019,0.533184,0.616624,0.721175,0.610545,0.601147,0.283036
+0.107527,0.0730734,0,0.0638253,0.084137,0.136684,0.0987535,0.0980562,0.0548221
