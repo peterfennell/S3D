@@ -5,7 +5,7 @@ int calculate_N(ifstream & datafile)
 {
     // skip the first line which contains the column names
     datafile.ignore(numeric_limits<streamsize>::max(),'\n');
-    
+
     int N = 0;
     char c;
     while(datafile.get(c)) // while we have not reached the end of the file
@@ -17,7 +17,7 @@ int calculate_N(ifstream & datafile)
     // reset the datafile
     datafile.clear();
     datafile.seekg(0, ios::beg);
-    
+
     return N;
 }
 
@@ -26,13 +26,13 @@ void read_single_column(int col, ifstream & datafile, double & val)
     // skip the the first col-1 entries
     for(int i=0; i<col; i++)
         datafile.ignore(numeric_limits<streamsize>::max(),',');
-    
+
     // take the next entry
     datafile >> val;
-    
+
     // skip the start of the next line
     datafile.ignore(numeric_limits<streamsize>::max(),'\n');
-    
+
 }
 
 
@@ -43,18 +43,18 @@ void read_x_y_from_column(ifstream & datafile, int xcol, double & x, int ycol, d
         // skip the the first col-1 entries
         for(int i=0; i<xcol; i++)
             datafile.ignore(numeric_limits<streamsize>::max(),',');
-        
+
         // take the next entry and ignore the following comma
         datafile >> x;
         datafile.ignore(1,',');
-        
+
         // skip the next remaining entries to y
         for(int i=xcol+1; i<ycol; i++)
             datafile.ignore(numeric_limits<streamsize>::max(),',');
-        
+
         // take the next entry
         datafile >> y;
-        
+
         // skip the start of the next line
         datafile.ignore(numeric_limits<streamsize>::max(),'\n');
     }
@@ -63,22 +63,22 @@ void read_x_y_from_column(ifstream & datafile, int xcol, double & x, int ycol, d
         // skip the the first col-1 entries
         for(int i=0; i<ycol; i++)
             datafile.ignore(numeric_limits<streamsize>::max(),',');
-        
+
         // take the next entry and ignore the following comma
         datafile >> y;
         datafile.ignore(1,',');
-        
+
         // skip the next remaining entries to y (+1 as we are at the next column after ycol)
         for(int i=ycol+1; i<xcol; i++)
             datafile.ignore(numeric_limits<streamsize>::max(),',');
-        
+
         // take the next entry
         datafile >> x;
-        
+
         // skip the start of the next line
         datafile.ignore(numeric_limits<streamsize>::max(),'\n');
     }
-    
+
 }
 
 void set_ifstream_to_row1(ifstream & datafile)
@@ -86,7 +86,7 @@ void set_ifstream_to_row1(ifstream & datafile)
     // go to beginning of file
     datafile.clear();
     datafile.seekg(0, ios::beg);
-    
+
     // skip first line
     datafile.ignore(numeric_limits<streamsize>::max(),'\n');
 }
@@ -97,14 +97,14 @@ void create_Xj_info(int & j, vector<map<double,unsigned int> > & cumcount, vecto
     cumcount = vector<map<double,unsigned int> > (G, map<double,unsigned int>());
     cumsum = vector<map<double,double> > (G, map<double,double>());
     range.clear();
-    
+
     // go to start of data
     set_ifstream_to_row1(datafile);
-    
+
     // read in the data
     double Xj;
     double y;
-    
+
     for(int i=0; i<N; i++)
     {
         // If we are skipping rows
@@ -114,10 +114,10 @@ void create_Xj_info(int & j, vector<map<double,unsigned int> > & cumcount, vecto
             for(int j=i; j<end_skip_rows; j++)
                 datafile.ignore(numeric_limits<streamsize>::max(),'\n');
         }
-        
+
         // read the (y,x) value
         read_x_y_from_column(datafile, j, Xj, y_col, y);
-        
+
         // check if the Xj value already exists in the group
         if(cumcount[groups[i]].find(Xj) == cumcount[groups[i]].end())
         {
@@ -132,15 +132,15 @@ void create_Xj_info(int & j, vector<map<double,unsigned int> > & cumcount, vecto
             cumsum[groups[i]][Xj] += y;
         }
     }
-    
-    
+
+
     // All data read in - now make it cumulative for each group and create range of X vector
     for(int g=0; g<G; g++)
     {
         // check to see if the group is greater than one (it is zero, nothing goes, if it is one then cum is done alread)
         if(cumcount[g].size() == 0)
             continue;
-        
+
         // iterate through the groups
         range.insert(cumcount[g].begin()->first); // add the first key to the range as it wont be added after
         for(auto it = std::next(cumcount[g].begin()); it!=cumcount[g].end(); it++)
@@ -151,28 +151,28 @@ void create_Xj_info(int & j, vector<map<double,unsigned int> > & cumcount, vecto
             cumsum[g][it->first] += cumsum[g][(std::prev(it))->first];
             range.insert(it->first); // add the key to the range
         }
-        
+
     }
-    
+
 }
 
 
 void calculate_best_split(vector<map<double,unsigned int> > &cumcount, vector<map<double,double> > &cumsum, double Xl, double Xu, set<double> &range, int G, double & best_split, double & best_R2_improvement)
 {// calculate the best split s in [Xl,Xu) to split the data and the corresponding R2 improvement
-    
-    
+
+
     // i) Declare R2 improvement for each element x in [Xl,Xu) and initialize to 0
     map<double,double> R2_improvements;
     for(auto it = range.find(Xl); it!=range.find(Xu); ++it)
         R2_improvements[*it] = 0;
     //cout << "Range size = " << R2_improvements.size() << endl;
-    
+
     // i') If there is only one element, cannot split so return
     if(R2_improvements.size() == 0)
         best_R2_improvement = 0;
     else
     {
-        
+
         // ii) loop over every group, for each group finding the contribution of each x in [Xl,Xu) to the R2
         unsigned int countterm_s, countend;
         double ysum_s, ysumend, subtraction_term;
@@ -181,7 +181,7 @@ void calculate_best_split(vector<map<double,unsigned int> > &cumcount, vector<ma
         {
             if(cumcount[g].size() == 0)
                 continue;
-            
+
             // 0) if there are no elements in the group:
             // i.e., if all the elements are at \geq Xu or all elements are \leq Xl
             if((cumcount[g].begin()->first >= Xu)||(std::prev(cumcount[g].end())->first <= Xl))
@@ -190,7 +190,7 @@ void calculate_best_split(vector<map<double,unsigned int> > &cumcount, vector<ma
             {
                 // a) take the larges x <= Xu as this will frequently be needed for the subraction
                 it_end = std::prev(cumcount[g].end());
-                
+
                 // cout << 1 << " " << flush;
                 // group end is greater than Xl, now find largest element in range of group that is not larger than Xu;
                 while(it_end->first > Xu)
@@ -204,7 +204,7 @@ void calculate_best_split(vector<map<double,unsigned int> > &cumcount, vector<ma
                 subtraction_term = ysumend*ysumend/countend;
                 //cout << 3 << " " << flush;
             }
-            
+
             // b) iterate through the elements and give contribution to R2 (dont count the last element as it cannot be split there (last element is in group at least))
             for( auto it = cumcount[g].begin(); it != std::prev(cumcount[g].end()); ++it)
             {
@@ -213,20 +213,20 @@ void calculate_best_split(vector<map<double,unsigned int> > &cumcount, vector<ma
                     continue;
                 if(it->first >= Xu)
                     break;
-                
+
                 //s = it->first;
                 countterm_s = it->second;
                 if(countterm_s == 0)
                     cout << "WARNINIG: countterm_s=0; " << it->first << " in group " << g << " (lims [" << cumcount[g].begin()->first << "," << std::prev(cumcount[g].end())->first << ")) in [" << Xl << "," << Xu << ")" << endl;
                 ysum_s = cumsum[g][it->first];
-                
+
                 R2_improvements[it->first] += (ysum_s*ysum_s/countterm_s) + (ysumend-ysum_s)*(ysumend-ysum_s)/(countend-countterm_s) - subtraction_term;
-                
+
             }
-            
+
         }
         //cout << 4 << " " << endl;
-        
+
         // Have calculated R2_improvements for each split, now return the best
         best_R2_improvement = 0;
         for(auto it = R2_improvements.begin(); it != R2_improvements.end(); it++)
@@ -237,21 +237,21 @@ void calculate_best_split(vector<map<double,unsigned int> > &cumcount, vector<ma
                 best_R2_improvement = it->second;
                 best_split = it->first;
             }
-            
-            
+
+
         }
     }
-    
+
 }
 
 void update_R2_DL(double best_R2_improvement, vector<double> & R2_improvements, double R2, vector<double> & DL, double lambda)
 {
     // update the R2 for the current variable
     R2_improvements.push_back(best_R2_improvement);
-    
+
     // update the change in loss function for the current variable
     DL.push_back(-(best_R2_improvement/(1-R2)) + lambda);
-    
+
 }
 
 
@@ -259,31 +259,31 @@ void get_column_names(ifstream & datafile, vector<string> & columns)
 {
     string s;
     char c;
-    
+
     datafile.get(c);
     // read columns until get to end of the line
     while(true)
     {
-        
+
         // read characters into s until get to a ,
         while((c != ',')&&(c != '\n'))
         {
             s.push_back(c);
             datafile.get(c);
         }
-        
+
         // add string to columns and clear s (and advance to next symbol)
         columns.push_back(s);
         s.clear();
-        
+
         // check to see if reached end of line
         if(c == '\n')
             break;
         else
             datafile.get(c);
-        
+
     }
-    
+
 }
 
 bool stopping_condition(vector<double> & DL, double best_R2_improvement, vector<double> & R2_improvements, vector<double> & splits, double & total_R2_improvement)
@@ -294,7 +294,7 @@ bool stopping_condition(vector<double> & DL, double best_R2_improvement, vector<
             n_consec_increasing ++;
         else
             break;
-    
+
     if(n_consec_increasing >= DL_thresh)
     {
         // restructure R2_improvements and splits_vectors
@@ -320,12 +320,12 @@ bool stopping_condition(vector<double> & DL, double best_R2_improvement, vector<
         else
             return false;
     }
-    
+
 }
 
 void recalculate_partitioned_cums(vector<map<double,unsigned int> > &cumcount, vector<map<double,double> > &cumsum, double & pl1, double & pl2, double & pu2, int G)
 {
-    
+
     unsigned int cumcount1, total_cumcount1 = 0, total_cumcount2 = 0;
     double cumsum1, total_cumsum1 = 0, total_cumsum2 = 0;
     int i=0;
@@ -334,11 +334,11 @@ void recalculate_partitioned_cums(vector<map<double,unsigned int> > &cumcount, v
     {
         if(cumcount[g].size() == 0)
             continue;
-        
+
         // The first Xj element of group g has to be below the start of the current group
         if(cumcount[g].begin()->first >= pl2)
             continue;
-        
+
         for(auto it = std::next(cumcount[g].begin()); it!=cumcount[g].end(); ++it) // (start at second element as first is redundant (no previous elements))
         {
             // iterate through cumcount[g] until arrive at pl2. If that doesn't happen (i.e., if end is first), grand
@@ -371,43 +371,43 @@ void recalculate_partitioned_cums(vector<map<double,unsigned int> > &cumcount, v
                         //if(it == cumcount[g].end())
                         //break;
                     }
-                    
+
                 }
-                
+
                 // all done, so break to next group
                 break;
-                
+
             }
-            
+
         }
-        
+
         total_cumcount2 += std::prev(cumcount[g].end())->second;
         total_cumsum2 += std::prev(cumsum[g].end())->second;
-        
+
     }
-    
+
     // cout << "\nN1 = " << total_cumcount1 << ", N2 = " << total_cumcount2 << ", sum = " << total_cumcount1+total_cumcount2 << endl;
     // cout << "ybar1 = " << total_cumsum1/total_cumcount1 << ", ybar2 = " << total_cumsum2/total_cumcount2 << endl;
-    
-    
+
+
 }
 
 
 void update_groupings(vector<unsigned int> & groups, int & G, int best_feature, vector<double> &best_splits, ifstream & datafile, int N, vector<double> & ybar_vec, vector<unsigned int> & N_vec, int y_col, int start_skip_rows, int end_skip_rows)
 {
-    
+
     // for each old group G, there are n_intervals = splits.size()+1 new groups:
     int n_intervals = best_splits.size()-1;
     G *= n_intervals;
-    
+
     // when readig in the data we can calculate the N and ybar vectors
     ybar_vec = vector<double>(G,0);
     N_vec = vector<unsigned int>(G,0);
     vector<double> sum_vec(G,0);
-    
+
     // have to stream back through the file and calculate the groups for each value
     set_ifstream_to_row1(datafile);
-    
+
     double x, y;
     int j;
     for(int i=0; i<N; i++)
@@ -422,26 +422,26 @@ void update_groupings(vector<unsigned int> & groups, int & G, int best_feature, 
 
         // read_single_column(best_feature, datafile, x);
         read_x_y_from_column(datafile, best_feature, x, y_col, y);
-        
+
         // find first split that is lower than x (or last interval if none exist)
         j=0;
         while((x > best_splits[j+1])&&(j<n_intervals-1)) // j \elem {0,1,...,n_intervals-1}
             j++;
-        
+
         groups[i] = groups[i]*n_intervals + j;
         // the newly chosen group occupies the last dimension. if we reshape groups as reshape(groups, (-1,n_intervals) then the chosen group is accessed as the last dimension 
-        
+
         // increment N for that group and sum_vec (which is used to get the ybar)
         N_vec[groups[i]] ++;
         sum_vec[groups[i]] += y;
     }
-    
+
     // finally get the ybars:
     for(int g=0; g<G; g++)
         if(N_vec[g]>0)
             ybar_vec[g] = sum_vec[g]/N_vec[g];
-    
-    
+
+
 }
 
 #endif

@@ -1,5 +1,5 @@
 // S3D ALGORITHM
-// 
+//
 // Inputs:
 //  (Required)
 //  - infile:           Datafile
@@ -57,13 +57,13 @@ int main(int argc, char* argv[])
 
     cout << "\n* STRUCTURED SUM OF SQUARES DECOMPOSITION ALGORITHM *\n" << endl;
     clock_t start = clock();
-    
+
     // What is the first thing that we do?
-    
+
     // ------------------------------
     // 1: Declare our data in a class
     //    - Data is often going to be accessed, so declare it in a class
-    
+
     ifstream datafile;
     string outfolder;
     int N;
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 
     }
     cout << " - lambda = " << lambda << endl;
-    
+
     // check if infile is open
     if(!datafile.is_open())
     {
@@ -147,11 +147,11 @@ int main(int argc, char* argv[])
     // output which rows are being skipped
     if(start_skip_rows > -1)
         cout << " - skipping rows " << start_skip_rows << " to " << end_skip_rows-1 << " inclusive." << endl;
-    
+
     // -------------------------------
     // 2: Read in features and y data
     //    - Get ybar and N
-    
+
     // Features:
     vector<string> features;
     get_column_names(datafile, features);
@@ -167,7 +167,7 @@ int main(int argc, char* argv[])
                 cout << *it << endl;
     }
     cout << endl;
-    
+
     // Y data:
     cout << "TARGET VARIABLE:\n" << features[y_col] << endl << endl;
     cout << "Reading in Y data..." << endl;
@@ -189,24 +189,24 @@ int main(int argc, char* argv[])
     }
     ybar /= N;
     SST -= N*ybar*ybar; // SST = \sum y_i^2 - N*ybar^2
-    
+
     cout << 1.0*(clock() - start)/CLOCKS_PER_SEC << " seconds to read in single column." <<  endl;
-    
+
     cout << " - " << N << " rows of data\n - SampleMean(Y) = " << ybar << "\n - SampleSTD(Y) = " << sqrt(1.0*SST/(N-1)) << "\n - SST(Y) = " << SST<< endl;
-    
+
     // ----------------------------
     // 3: Declare variables
-    
+
     // Groupings
     int G=1; // number of groups
     vector<unsigned int> groups(N,0); // group number of each row of data
     // alternative approach of the above is to save it to the file
-    
-    
+
+
     // Cumulative
     vector<map<double, unsigned int> > cumcount(G,map<double, unsigned int>());
     vector<map<double, double> > cumsum(G,map<double, double>());;
-    
+
     // Best feature variables (chosen at each level after looping through each variable
     double R2_improvement_max;
     int best_feature;
@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
     vector<double> best_splits;
     vector<unsigned int> best_N_vec(1,N);
     vector<double> best_ybar_vec(1,ybar);
-    
+
     // Feature splitting variables
     double R2_improvement, best_R2_improvement, R2_improvement_s;
     vector<double> R2_improvements, DL;
@@ -222,8 +222,8 @@ int main(int argc, char* argv[])
     vector<double> splits;
     map<double, double> deltaR2_p, split_p;
     double pl, pu, pl1, pu1, pl2, pu2, split;
-    
-    
+
+
     // Variables
     vector<short> chosen_feature(N_columns,0);
     vector<short> bad_feature(N_columns,0);
@@ -231,10 +231,10 @@ int main(int argc, char* argv[])
     //bad_feature[1] = 1; // user_id
     //bad_feature[2] = 1; // neigh_id
     //bad_feature[3] = 1; // global_time
-    
+
     // ------------------------------
     // 4: Open outfiles & add headers
-    
+
     ofstream R2improvements_file(string(outfolder).append("/R2improvements.csv").c_str());
     if(!R2improvements_file.is_open())
     {
@@ -275,31 +275,31 @@ int main(int argc, char* argv[])
         return 1;
     }
     N_file << N << endl;
-    
-    
+
+
     // --------------------------
     //  : CREATE THE TREE
     // --------------------------
-    
+
     for(int l=0;l<max_features;l++) // Loop over the levels of the tree
     {
         cout << "\n--------------------------------------" << endl;
         cout << "   CREATING LEVEL " << l+1 << " OF THE TREE."  << endl;
         cout << "--------------------------------------" << endl << endl;
-        
+
         // ------------------------------------------------
         // 1: CALCULATE THE R2_improvement FOR EACH FEATURE
         //    AND PICK THE BEST ONE
         // ------------------------------------------------
-        
+
         R2_improvement_max = 0;
-        
+
         for(int j=0; j<N_columns; j++) // for each feature
         {
-            
+
             // if(j!=4)
             //    continue;
-            
+
             // 0: check if column is good
             if(j == y_col) // if this it the y_columns
                 continue;
@@ -314,16 +314,16 @@ int main(int argc, char* argv[])
                 cout << " - skipping bad feature " << features[j] << endl << endl;
                 continue;
             }
-            
+
             cout << " - processing " << features[j] << endl;
             cout << "   - reading data..." << endl;
-            
+
             // i: read in the feature column from file to create cumcount and cumsum vectors
             create_Xj_info(j, cumcount, cumsum, range, datafile, groups, G, y_col, N, start_skip_rows, end_skip_rows);
             // error check on the ybars (deleted as comparing floating point numbers (not good)
-            
+
             cout << "   - range: [" << *(range.begin()) << "," << *(std::prev(range.end())) << "]" << endl;
-            
+
             // ii: initialize the  R2 data and the deltaR2_p map
             R2_improvement = 0;
             R2_improvements.clear();
@@ -333,7 +333,7 @@ int main(int argc, char* argv[])
             splits.push_back(*(range.begin())); // first and last values
             splits.push_back(*(std::prev(range.end())));
             DL.clear();
-            
+
             // iii: find the best first split
             pl = *(range.begin());
             pu = *(std::prev(range.end())); // pl and pu are lower and upper bounds of the partition
@@ -346,42 +346,42 @@ int main(int argc, char* argv[])
             }
             R2_improvement = best_R2_improvement;
             update_R2_DL(best_R2_improvement, R2_improvements, R2, DL, lambda);
-            
+
             // iv: create the two subpartitions from the best split, [Xl,split] and (split,Xu)
             splits.push_back(split);
             pl2 = *(std::next(range.find(split))); // next element after split
             pu2 = pu;
             pl1 = pl;
             pu1 = split;
-            
+
             //for(auto it=cumcount[0].begin(); it != cumcount[0].end(); ++it)
             //    cout << it->first << "\t" << it->second << endl;
-            
-            
+
+
             cout << "   - splits:" << endl;
             cout << "     - (interval, splits, ybars, Ns, R2, delta LF)" << endl;
-            
-            
+
+
             // iii: calculate the rest of the splits until the stopping condition has been reached
             while(!stopping_condition(DL, best_R2_improvement, R2_improvements, splits, R2_improvement))
             {
                 // a: change cumcount and cumsum for the split (only have the change the second partition
                 recalculate_partitioned_cums(cumcount, cumsum, pl1, pl2, pu2, G);
-                
-                
+
+
                 // output the information
                 cout << "     - [" << pl << "," << pu << "], splits = [" << pl << "," << split << "] and [" << pl2 << "," << pu << "], ";
                 cout << " total R2 improvement = " << R2_improvement << ", DL = " << DL.back() << endl;
-                
+
                 // b: calculate the best splits and R2 improvements for the splitted partition
                 calculate_best_split(cumcount, cumsum, pl1, pu1, range, G, split, R2_improvement_s);
                 deltaR2_p[pu1] = R2_improvement_s/SST;
                 split_p[pu1] = split;
-                
+
                 calculate_best_split(cumcount, cumsum, pl2, pu2, range, G, split, R2_improvement_s);
                 deltaR2_p[pu2] = R2_improvement_s/SST;
                 split_p[pu2] = split;
-                
+
                 // c: calculate the best partition and split overall (start from second element, first is placeholder);
                 best_R2_improvement = deltaR2_p.begin()->second;
                 split = split_p.begin()->second;
@@ -397,24 +397,24 @@ int main(int argc, char* argv[])
                         pu = it->first;
                     }
                 }
-                
-                
+
+
                 // d: create the two subpartitions from the best split
                 splits.push_back(split);
                 pl2 = *(std::next(range.find(split))); // next element after split
                 pu2 = pu;
                 pl1 = pl;
                 pu1 = split;
-                
-                
-                
+
+
+
                 // e: update the R2 improvement and DL
                 update_R2_DL(best_R2_improvement, R2_improvements, R2, DL, lambda);
                 R2_improvement += best_R2_improvement;
-                
+
             } // splits calculated
-            
-            
+
+
             cout << "     - [" << pl << "," << pu << "] split into [" << pl << "," << split << "] and [" << pl2 << "," << pu << "], total R2 improvement = " << R2_improvement << ", DL = " << DL.back() << endl;
             cout << "   - Chosen partitions: ";
             std::sort(splits.begin(), splits.end());
@@ -423,10 +423,10 @@ int main(int argc, char* argv[])
                 cout << "(" << *std::prev(it) << "," << *it << "], ";
             cout << endl;
             cout << "   - R2 improvement: " << R2_improvement << endl << endl;
-            
+
             // iv: Record the R2_improvement
             R2improvements_vec.push_back(R2_improvement);
-            
+
             // v: check to see if the feature is the best one
             if(R2_improvement > R2_improvement_max)
             {
@@ -435,39 +435,39 @@ int main(int argc, char* argv[])
                 best_splits = splits;
                 std::sort(best_splits.begin(), best_splits.end());
             }
-            
+
         }
-        
-        
-        
+
+
+
         // -------------------------------------------
         // 2: BEST FEATURE CHOSEN, UPDATE & SAVE THE OUTPUT
         // -------------------------------------------
-        
+
         if(R2_improvement_max == 0)
         {
             cout << " No further improvements in R2; Breaking" << endl << endl;
             break;
         }
-        
+
         // Update
         R2 += R2_improvement_max;
         chosen_feature[best_feature] = 1;
-        
+
         // Save output
-        
+
         cout << "SUMMARY:\n - Best feature is " << features[best_feature] << " with R2 improvement of " << R2_improvement_max << "." << endl;
         cout << " - Total R2 is now " << R2 << endl;
-        
+
         // // remove first and last placeholders from best_splts
         // best_splits.pop_back();
         // best_splits.erase(best_splits.begin());
-        
+
         // Update the groupings
         cout << " - Updating groups...";
         update_groupings(groups, G, best_feature, best_splits, datafile, N, best_ybar_vec, best_N_vec, y_col, start_skip_rows, end_skip_rows);
         cout << G << " groups now." << endl << endl << endl;
-        
+
         // i) save the level info
         levels_file << features[best_feature] << ',' << R2 << endl;
         // ii) save the splits
@@ -476,7 +476,7 @@ int main(int argc, char* argv[])
             splits_file << *it << ',';
         splits_file << *(std::prev(best_splits.end())) << endl;
         // iii) save the nodal elements for the first three elements (otherwise it becomes too big)
-        
+
         for(int g=0; g<G-1; g++)
         {
             ybar_file << best_ybar_vec[g] << ',';
@@ -484,27 +484,27 @@ int main(int argc, char* argv[])
         }
         ybar_file << best_ybar_vec.back() << endl;
         N_file << best_N_vec.back() << endl;
-        
-        
+
+
         // iv) Save the R2_improvements_info
         for(int i=0; i<R2improvements_vec.size()-1; i++)
             R2improvements_file << R2improvements_vec[i] << ",";
         R2improvements_file << R2improvements_vec.back() << endl;
         R2improvements_vec.clear();
-        
+
         // check to see if G is greater than the breaking threshold
         if(G > G_THRESH)
         {
             cout << "Number of groups G = " << G << " is greater than G_THRESH = " << G_THRESH << "; Breaking" << endl << endl;
             break;
         }
-        
+
     }
-    
-    
-    
+
+
+
     clock_t end = clock();
     cout << "Time = " << 1.0*(end - start)/CLOCKS_PER_SEC << " seconds." <<  endl;
-    
-    
+
+
 }
